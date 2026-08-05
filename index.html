@@ -338,17 +338,28 @@ const STAFF = [
 ];
 
 /* ── Known laptops ──
-   Each person always works on their own machine. Only the CEO's is confirmed
-   so far (read directly off this device); the two staff laptops could not be
-   fingerprinted from here because the Wi-Fi isolates clients — nothing but the
-   gateway answers an ARP sweep. Fill these in from each laptop's own
-   "Device Identity" line and they become a second attribution signal.        */
-const DEVICES = {
-  ceo:     { hostname:'DESKTOP-1N8FPU5', model:'Lenovo 20MAS0MR1Q', serial:'PF1N5WTA',
-             mac:'D4-3B-04-C3-C5-17', confirmed:true },
-  s_aswin: { hostname:'', model:'', serial:'', mac:'', confirmed:false },
-  m_ajay:  { hostname:'', model:'', serial:'', mac:'', confirmed:false }
-};
+   Each person always works on their own machine, so the laptop is a second
+   attribution signal. Registrations are kept in localStorage ONLY and are
+   deliberately NOT committed: this repo has to be public for GitHub Pages, and
+   a hostname + BIOS serial + MAC address is exactly the kind of thing that
+   should not sit in a public file. Register a machine from the browser console:
+
+     ibiRegisterDevice('ceo', {hostname:'…', model:'…', serial:'…', mac:'…'})
+
+   Get those values by running this on the laptop being registered:
+     $a = Get-NetAdapter | Where-Object Status -eq 'Up' | Select-Object -First 1
+     [PSCustomObject]@{ Hostname=$env:COMPUTERNAME; MAC=$a.MacAddress
+       Model=(Get-CimInstance Win32_ComputerSystem).Model
+       Serial=(Get-CimInstance Win32_BIOS).SerialNumber }                     */
+let DEVICES = load('ibi_sup_devices', {});
+function ibiRegisterDevice(personId, info){
+  if(!personById(personId)) return 'Unknown person id. Use: ' + STAFF.map(s => s.id).join(', ');
+  DEVICES[personId] = Object.assign({ hostname:'', model:'', serial:'', mac:'' }, info, { confirmed:true });
+  save('ibi_sup_devices', DEVICES);
+  renderStaff();
+  return personById(personId).name + ' → ' + (info.hostname || 'registered');
+}
+window.ibiRegisterDevice = ibiRegisterDevice;
 
 /* Task Manager id -> roster entry */
 function personById(id){
