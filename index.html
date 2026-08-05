@@ -637,6 +637,70 @@ async function fetchApp(app){
   }
 }
 
+/* ══ BACKEND LOG ══
+   The dashboard works standalone, but it can only diff while it is open and its
+   history is one browser's localStorage. The supervision backend runs the same
+   diff on a 5-minute trigger and appends every change to a Google Sheet, so the
+   record survives closed tabs and is the same on every device.
+
+   Point this at the backend's /exec URL once, from the browser console:
+       ibiSetBackend('https://script.google.com/macros/s/…/exec')
+   Server rows are authoritative: where they overlap a locally-detected change
+   for the same record, the local one is dropped.                             */
+let SUP_BACKEND = load('ibi_sup_backend', '');
+function ibiSetBackend(u){
+  SUP_BACKEND = String(u || '').trim();
+  save('ibi_sup_backend', SUP_BACKEND);
+  toast(SUP_BACKEND ? 'Backend connected — pulling history' : 'Backend disconnected');
+  pollAll(true);
+  return SUP_BACKEND || '(cleared)';
+}
+window.ibiSetBackend = ibiSetBackend;
+
+let backendState = { on:false, err:'', total:0, lastRun:'' };
+
+async function fetchServerLog(){
+  if(!SUP_BACKEND){ backendState = { on:false, err:'not configured', total:0, lastRun:'' }; return; }
+  try{
+    const ctl = new AbortController();
+    const kill = setTimeout(() => ctl.abort(), 30000);
+    let d;
+    try{
+      const r = await fetch(SUP_BACKEND + '?action=getLog&limit=500', { signal:ctl.signal });
+      d = await r.json();
+    } finally { clearTimeout(kill); }
+    if(!d || d.status !== 'ok') throw new Error((d && d.message) || 'bad response');
+
+    // One sheet row per changed field — regroup into one event per record+moment.
+    const byKey = {};
+    (d.events || []).forEach(row => {
+      const app = APPS.find(a => a.name === row.app);
+      if(!app) return;
+      const t = new Date(row.t).getTime();
+      if(isNaN(t)) return;
+      const k = app.key + '|' + row.id + '|' + row.t;
+      if(!byKey[k]){
+        byKey[k] = { app:app.key, id:row.id, label:row.label, t:t, chg:[], src:'server',
+                     type:row.action === 'Added' ? 'add' : row.action === 'Removed' ? 'del' : 'edit',
+                     who:'', srvPerson:row.person || '', srvSure:row.certainty === 'Recorded' };
+      }
+      if(row.field) byKey[k].chg.push({ f:row.field, from:row.from, to:row.to });
+    });
+    const srv = Object.keys(byKey).map(k => byKey[k]);
+
+    // Server wins for any record it already covers in the same 5-minute bucket.
+    const bucket = e => e.app + '|' + e.id + '|' + Math.floor(e.t / 300000);
+    const covered = {};
+    srv.forEach(e => covered[bucket(e)] = 1);
+    events = srv.concat(events.filter(e => e.src !== 'server' && !covered[bucket(e)]))
+                .sort((a, b) => b.t - a.t).slice(0, 800);
+    save(LS.events, events.map(e => { const c = Object.assign({}, e); delete c.fresh; return c; }));
+    backendState = { on:true, err:'', total:d.total || 0, lastRun:d.lastRun || '' };
+  }catch(e){
+    backendState = { on:false, err:String((e && e.message) || e).slice(0, 80), total:0, lastRun:'' };
+  }
+}
+
 /* ══ ATTENDANCE ══ */
 async function fetchAttendance(){
   await Promise.all(STAFF.filter(s => s.attend).map(async s => {
@@ -737,6 +801,8 @@ function mkEvent(app, type, id, label, changes, when, who, backfill){
    app we attribute by the CEO's app→staff assignment, but ONLY while that
    person is punched in — and we label it as an assignment, never as fact.  */
 function attribute(ev){
+  // A server row already carries the attribution the backend worked out.
+  if(ev.src === 'server' && ev.srvPerson) return { name:ev.srvPerson, sure:!!ev.srvSure };
   if(ev.who){
     const p = personById(ev.who);
     return { name:p ? p.name : ev.who, sure:true };
@@ -788,6 +854,7 @@ async function pollAll(manual){
   try{
     const wasFirst = firstRun;
     fetchAttendance().then(scheduleRender);
+    fetchServerLog().then(scheduleRender);
     // Firing all seven at once made Apps Script throttle — backends that answer
     // in 2s alone were timing out at 28s. A small pool keeps every app healthy.
     await runPool(APPS, 3, app =>
@@ -832,6 +899,15 @@ function renderBanner(){
     h += '<div class="banner warn">⚠ <div><b>' + down.length + ' app' + (down.length>1?'s':'')
       + ' not reachable:</b> ' + down.map(a => esc(a.name)).join(', ')
       + '. Their activity is paused, not lost — the last snapshot is kept and diffing resumes when they come back.</div></div>';
+  }
+  if(!SUP_BACKEND){
+    h += '<div class="banner warn">🗄 <div><b>No permanent record.</b> Changes are only being captured '
+      + 'while this page is open, and the history lives in this browser alone. Deploy '
+      + '<code>IBI_Supervision_Backend.gs</code> and connect it with '
+      + '<code>ibiSetBackend(\'…/exec\')</code> in the console to log activity 24/7 to a Google Sheet.</div></div>';
+  } else if(!backendState.on){
+    h += '<div class="banner warn">🗄 <div><b>Backend unreachable</b> — ' + esc(backendState.err)
+      + '. Falling back to in-browser detection only.</div></div>';
   }
   const mk = health.market;
   if(mk && mk.ok){
@@ -1123,7 +1199,26 @@ function renderCoach(){
 }
 
 function renderHealth(){
-  document.getElementById('healthGrid').innerHTML = APPS.map(a => {
+  const srvRun = backendState.lastRun ? new Date(backendState.lastRun) : null;
+  const srvCard = '<div class="hcard" style="border-color:' + (backendState.on ? 'var(--ok-bd)' : 'var(--border2)') + '">'
+    + '<div class="hcard-top">'
+      + '<span style="width:9px;height:9px;border-radius:50%;background:#22c55e;flex-shrink:0;'
+        + (backendState.on ? '' : 'background:#555') + '"></span>'
+      + '<span class="hname">🗄 Permanent record</span>'
+      + '<span class="hstat ' + (backendState.on ? 'hs-ok' : 'hs-bad') + '">'
+        + (backendState.on ? 'LOGGING' : (SUP_BACKEND ? 'DOWN' : 'OFF')) + '</span>'
+    + '</div>'
+    + '<div class="hrow"><span>Rows logged</span><b>' + (backendState.total || '—') + '</b></div>'
+    + '<div class="hrow"><span>Last server run</span><b>' + (srvRun ? ago(srvRun) : '—') + '</b></div>'
+    + '<div class="hrow"><span>From server</span><b>' + events.filter(e => e.src === 'server').length + '</b></div>'
+    + '<div class="hrow"><span>Detected here</span><b>' + events.filter(e => e.src !== 'server').length + '</b></div>'
+    + '<div class="hnote">' + (backendState.on
+        ? 'Activity is recorded every 5 minutes whether or not this page is open.'
+        : (SUP_BACKEND ? esc(backendState.err)
+           : 'Not connected — in-browser detection only. Run ibiSetBackend(\'…/exec\') once.'))
+      + '</div></div>';
+
+  document.getElementById('healthGrid').innerHTML = srvCard + APPS.map(a => {
     const h = health[a.key] || {};
     const last = events.filter(e => e.app === a.key)[0];
     const lastD = last ? new Date(last.t) : null;

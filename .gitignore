@@ -1,0 +1,7 @@
+# NEVER commit a .gs to this repo — it is PUBLIC and served by GitHub Pages,
+# which would publish the backend source (and anything in it) to the internet.
+# IBI_Supervision_Backend.gs stays a LOCAL MIRROR; the live copy lives in the
+# Apps Script editor. Same rule that was applied to IBIStockAvailability_GAS.gs
+# after `const CEO_PIN` turned out to be readable over HTTP.
+*.gs
+appsscript.json
