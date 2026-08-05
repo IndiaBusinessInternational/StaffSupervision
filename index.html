@@ -435,7 +435,13 @@ const APPS = [
     dayOnly:true,
     /* Measured 36s cold / 6s warm — it needs more headroom than the others,
        and an aborted call does not leave the script warm for the retry. */
-    timeout:55000
+    timeout:55000,
+    /* ⚠ Polled every 4th cycle (~3 min), not every 45s. It is the slowest
+       backend by far and hitting it every cycle got it rate-limited into
+       returning HTML error pages. Nothing is lost by the slower cadence: this
+       feed is date-only anyway, so its events are timestamped at detection
+       either way, and dispatches also surface through Package Tracker. */
+    everyNth:4
   },
   {
     key:'tasks', name:'Task Manager', short:'Tasks', colour:'#fbbf24',
@@ -498,6 +504,7 @@ let polling  = true;
 let busy     = false;
 let firstRun = !localStorage.getItem(LS.seen);
 let pollTimer= null;
+let pollCount= 0;
 const POLL_MS = 45000;
 
 function load(k, d){ try{ const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; }catch(e){ return d; } }
@@ -723,12 +730,21 @@ async function fetchServerLog(){
 }
 
 /* ══ ATTENDANCE ══ */
-async function fetchAttendance(){
-  await Promise.all(STAFF.filter(s => s.attend).map(async s => {
+/* ⚠ Must run INSIDE the fetch pool, not alongside it. Attendance answers in
+   12–34 s, and firing it next to the eight app fetches pushed total concurrency
+   past what Apps Script tolerates — both staff went to "attendance unavailable"
+   on the live site while the same code worked locally. On failure the previous
+   state is kept rather than flipping the card to UNKNOWN on one bad poll.     */
+async function fetchOneAttendance(s){
     try{
       const q = new URLSearchParams({ action:'getState', staffName:s.name, token:ATTEND_TOKEN });
-      const r = await fetch(GAS(ATTEND_ID) + '?' + q);
-      const d = await r.json();
+      const ctl = new AbortController();
+      const kill = setTimeout(() => ctl.abort(), 40000);
+      let d;
+      try{
+        const r = await fetch(GAS(ATTEND_ID) + '?' + q, { signal:ctl.signal });
+        d = await r.json();
+      } finally { clearTimeout(kill); }
       if(d && d.status === 'success'){
         const punches = d.punches || [];
         let since = null;
@@ -738,11 +754,14 @@ async function fetchAttendance(){
           }
         }
         attend[s.name] = { state:d.currentState, punches:punches, since:since, ok:true };
-      } else {
-        attend[s.name] = { state:'?', punches:[], since:null, ok:false };
+        return;
       }
-    }catch(e){ attend[s.name] = { state:'?', punches:[], since:null, ok:false }; }
-  }));
+      throw new Error('bad response');
+    }catch(e){
+      // Keep the last good reading — one slow poll must not blank the card.
+      if(!attend[s.name]) attend[s.name] = { state:'?', punches:[], since:null, ok:false };
+      else attend[s.name].stale = true;
+    }
 }
 function punchToDate(t){
   const m = String(t||'').match(/^(\d{1,2}):(\d{2}):?(\d{2})?\s*(AM|PM)?$/i);
@@ -870,20 +889,28 @@ function ingest(app, recs){
 async function pollAll(manual){
   if(busy) return;
   busy = true;
+  pollCount++;
   setLive('syncing', true);
   let count = 0;
   try{
     const wasFirst = firstRun;
-    fetchAttendance().then(scheduleRender);
     fetchServerLog().then(scheduleRender);
-    // Firing all seven at once made Apps Script throttle — backends that answer
-    // in 2s alone were timing out at 28s. A small pool keeps every app healthy.
-    await runPool(APPS, 3, app =>
-      fetchApp(app)
+
+    /* One pool for EVERYTHING that hits Apps Script. Firing these in parallel
+       makes Google throttle backends that answer in 2 s on their own — that is
+       what produced the "unreachable" apps and the blank attendance cards.
+       Slowest-first so the long cold starts are not left until the end. */
+    const jobs = [];
+    STAFF.filter(s => s.attend).forEach(s =>
+      jobs.push(() => fetchOneAttendance(s).then(scheduleRender)));
+    APPS.slice()
+      .filter(app => !app.everyNth || pollCount % app.everyNth === 0 || !health[app.key])
+      .sort((a, b) => (b.timeout || 0) - (a.timeout || 0)).forEach(app =>
+      jobs.push(() => fetchApp(app)
         .then(recs => { if(recs !== null) count += ingest(app, recs); })
         .catch(() => {})                       // already recorded in health
-        .then(scheduleRender)
-    );
+        .then(scheduleRender)));
+    await runPool(jobs, 3, j => j());
     if(wasFirst){ localStorage.setItem(LS.seen, '1'); firstRun = false; }
     renderAll();
     setLive('live', false);
