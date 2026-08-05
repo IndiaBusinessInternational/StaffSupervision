@@ -5,3 +5,8 @@
 # after `const CEO_PIN` turned out to be readable over HTTP.
 *.gs
 appsscript.json
+
+# clasp working dir — holds a copy of the backend source plus project/auth ids
+backend/
+.clasp.json
+.clasprc.json
