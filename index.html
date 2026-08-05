@@ -323,11 +323,38 @@ window.IBI_VERSION_NOTE = 'First release — live activity feed across 7 staff w
 
 const GAS = id => 'https://script.google.com/macros/s/' + id + '/exec';
 
-/* ── Staff roster: must match STAFF_NAMES in the Attendance backend ── */
+/* ── People roster ──
+   `id` matches the Task Manager's assignedTo values (s_aswin / m_ajay / ceo),
+   which is the one place an IBI backend records a real identity — so anything
+   coming from there is attributed for certain rather than inferred.
+   `name` must match STAFF_NAMES in the Attendance backend for the punch feed.
+   `device` is the laptop each person always works on (see DEVICES below).  */
 const STAFF = [
-  { name:'S. Aswin', initials:'SA' },
-  { name:'M. Ajay',  initials:'MA' }
+  { id:'s_aswin', name:'S. Aswin', initials:'SA', role:'Packaging Manager', attend:true },
+  { id:'m_ajay',  name:'M. Ajay',  initials:'MA', role:'Catalogue Manager', attend:true },
+  { id:'ceo',     name:'Dr T Sasimurugan', initials:'TS',
+    role:'Founder & CEO', attend:false, isCeo:true,
+    full:'Dr T Sasimurugan ME.,PhD., Founder & CEO, India Business International' }
 ];
+
+/* ── Known laptops ──
+   Each person always works on their own machine. Only the CEO's is confirmed
+   so far (read directly off this device); the two staff laptops could not be
+   fingerprinted from here because the Wi-Fi isolates clients — nothing but the
+   gateway answers an ARP sweep. Fill these in from each laptop's own
+   "Device Identity" line and they become a second attribution signal.        */
+const DEVICES = {
+  ceo:     { hostname:'DESKTOP-1N8FPU5', model:'Lenovo 20MAS0MR1Q', serial:'PF1N5WTA',
+             mac:'D4-3B-04-C3-C5-17', confirmed:true },
+  s_aswin: { hostname:'', model:'', serial:'', mac:'', confirmed:false },
+  m_ajay:  { hostname:'', model:'', serial:'', mac:'', confirmed:false }
+};
+
+/* Task Manager id -> roster entry */
+function personById(id){
+  const k = String(id||'').toLowerCase().trim();
+  return STAFF.find(s => s.id === k) || null;
+}
 const ATTEND_ID    = 'AKfycbztj_cU2LtHlHztnFk9wP84pDe8BwLbtzfSoiZfVwT_d5cc4PDjM_qTV9m9LPUxfPbj6Q';
 const ATTEND_TOKEN = 'IBI_ATTEND_2026';
 const STOCK_ID     = 'AKfycbzXTGd4PyjkGKoMr64VAYFKxKN23yZEzaMsUViOCJ8xEIvN9c8XgY00VF1VB6uBvslvOg';
@@ -429,6 +456,17 @@ const APPS = [
           description:'Description',bullets:'Bullets',productDimensions:'Product dims',
           packageDimensions:'Package dims',minQty:'Min qty',maxQty:'Max qty'},
     noStamp:true
+  },
+  {
+    key:'finance', name:'Finance Tracker', short:'Finance', colour:'#22d3ee',
+    site:'https://finance.indiabusinessinternational.online/',
+    url:GAS('AKfycbxosA5MhEcSAIx68X2iOjF7psh1Iie3QlgTJHzy1V7Fwi2MJJlhqt0vROs-csoqpgAs'),
+    method:'GET', params:{action:'getAll'},
+    pick:d => d.transactions || [],
+    id:r => r.id, label:r => (r.description || r.party || 'Transaction'),
+    stamp:r => r.createdAt,
+    watch:['date','type','description','party','amount','note'],
+    nice:{date:'Date',type:'Type',description:'Description',party:'Party',amount:'Amount ₹',note:'Note'}
   }
 ];
 
@@ -438,7 +476,9 @@ const LS = {
   theme:'ibi_sup_theme', seen:'ibi_sup_seen'
 };
 let events   = load(LS.events, []);
-let assign   = load(LS.assign, { market:'M. Ajay', stock:'S. Aswin' });
+/* Ajay is Catalogue Manager (listings), Aswin is Packaging Manager
+   (stock, packages, dimensions, returns) — roles read from the Task Manager. */
+let assign   = load(LS.assign, { market:'M. Ajay', stock:'S. Aswin', finance:'Dr T Sasimurugan' });
 let attend   = {};            // staffName -> {state, punches, since}
 let health   = {};            // appKey -> {ok, count, last, err, ms}
 let records  = {};            // appKey -> [normalised records]
@@ -588,7 +628,7 @@ async function fetchApp(app){
 
 /* ══ ATTENDANCE ══ */
 async function fetchAttendance(){
-  await Promise.all(STAFF.map(async s => {
+  await Promise.all(STAFF.filter(s => s.attend).map(async s => {
     try{
       const q = new URLSearchParams({ action:'getState', staffName:s.name, token:ATTEND_TOKEN });
       const r = await fetch(GAS(ATTEND_ID) + '?' + q);
@@ -686,9 +726,15 @@ function mkEvent(app, type, id, label, changes, when, who, backfill){
    app we attribute by the CEO's app→staff assignment, but ONLY while that
    person is punched in — and we label it as an assignment, never as fact.  */
 function attribute(ev){
-  if(ev.who) return { name:ev.who, sure:true };
+  if(ev.who){
+    const p = personById(ev.who);
+    return { name:p ? p.name : ev.who, sure:true };
+  }
   const a = assign[ev.app];
   if(!a) return null;
+  const p = STAFF.find(s => s.name === a);
+  // The CEO has no attendance feed, so their assigned apps always attribute.
+  if(p && !p.attend) return { name:a, sure:false };
   const st = attend[a];
   if(st && st.state === 'IN') return { name:a, sure:false };
   return null;
@@ -788,7 +834,8 @@ function renderBanner(){
 function renderStaff(){
   document.getElementById('staffGrid').innerHTML = STAFF.map(s => {
     const st  = attend[s.name] || { state:'?', punches:[], since:null };
-    const on  = st.state === 'IN';
+    const on  = s.attend ? st.state === 'IN' : true;   // CEO is always "active"
+    const dev = DEVICES[s.id] || {};
     const my  = events.filter(e => { const at = attribute(e); return at && at.name === s.name; });
     const tod = my.filter(e => isToday(new Date(e.t)));
     const hr  = my.filter(e => Date.now() - e.t < 3600000);
@@ -819,19 +866,28 @@ function renderStaff(){
       + '<div class="staff-top">'
         + '<div class="avatar">' + s.initials + '</div>'
         + '<div style="min-width:0"><div class="staff-name">' + esc(s.name) + '</div>'
-        + '<div class="staff-sub">' + (on ? 'On duty for ' + dur : (st.state === '?' ? 'Attendance unavailable' : 'Off duty')) + '</div></div>'
-        + '<span class="duty-tag' + (on ? ' on' : '') + '">' + (on ? '● ON DUTY' : (st.state === '?' ? '? UNKNOWN' : '○ OFF')) + '</span>'
+        + '<div class="staff-sub">' + esc(s.role) + ' · '
+          + (!s.attend ? 'no punch clock'
+             : on ? 'on duty for ' + dur
+             : (st.state === '?' ? 'attendance unavailable' : 'off duty')) + '</div></div>'
+        + '<span class="duty-tag' + (on ? ' on' : '') + '">'
+          + (!s.attend ? '★ CEO' : on ? '● ON DUTY' : (st.state === '?' ? '? UNKNOWN' : '○ OFF')) + '</span>'
       + '</div>'
       + '<div class="staff-stats">'
         + '<div class="sstat"><b>' + hr.length  + '</b><span>last hour</span></div>'
         + '<div class="sstat"><b>' + tod.length + '</b><span>today</span></div>'
-        + '<div class="sstat"><b>' + (st.punches ? st.punches.length : 0) + '</b><span>punches</span></div>'
+        + (s.attend
+            ? '<div class="sstat"><b>' + (st.punches ? st.punches.length : 0) + '</b><span>punches</span></div>'
+            : '<div class="sstat"><b>' + mine.length + '</b><span>apps owned</span></div>')
       + '</div>'
       + '<div class="nowline">' + nowHtml + '</div>'
-      + (st.punches && st.punches.length
+      + (s.attend && st.punches && st.punches.length
           ? '<div class="punchstrip">' + st.punches.map(p =>
               '<span class="punch ' + (p.type === 'IN' ? 'in' : 'out') + '">' + p.type + ' ' + esc(p.time) + '</span>').join('') + '</div>'
           : '')
+      + '<div class="punchstrip"><span class="punch" style="' + (dev.confirmed ? 'color:var(--cyan);border-color:var(--cyan-dark)' : 'color:var(--text3)') + '" '
+        + 'title="' + (dev.confirmed ? esc(dev.model + ' · serial ' + dev.serial + ' · ' + dev.mac) : 'Not registered yet') + '">'
+        + '💻 ' + (dev.confirmed ? esc(dev.hostname) : 'laptop not registered') + '</span></div>'
       + '<div class="assign-row"><span>Assigned app</span>'
         + '<select data-staff="' + esc(s.name) + '" onchange="setAssign(this.value, this.dataset.staff)">'
         + '<option value=""' + (mine.length ? '' : ' selected') + '>— not assigned —</option>'
@@ -924,10 +980,11 @@ function renderToday(){
   const tod = events.filter(e => isToday(new Date(e.t)));
   const adds = tod.filter(e => e.type === 'add').length;
   const eds  = tod.filter(e => e.type === 'edit').length;
-  const onDuty = STAFF.filter(s => (attend[s.name]||{}).state === 'IN').length;
+  const clocked = STAFF.filter(s => s.attend);
+  const onDuty  = clocked.filter(s => (attend[s.name]||{}).state === 'IN').length;
   document.getElementById('kpis').innerHTML =
       kpi(tod.length, 'changes today') + kpi(adds, 'new records') + kpi(eds, 'edits')
-    + kpi(onDuty + '/' + STAFF.length, 'staff on duty')
+    + kpi(onDuty + '/' + clocked.length, 'staff on duty')
     + kpi(APPS.filter(a => health[a.key] && health[a.key].ok).length + '/' + APPS.length, 'apps online');
 
   const byApp = APPS.map(a => ({ a:a, n:tod.filter(e => e.app === a.key).length }))
