@@ -565,22 +565,41 @@ function tryUnlock(){
   const msg = document.getElementById('gateMsg');
   if(!pin){ msg.textContent = 'Enter the CEO password.'; return; }
   btn.disabled = true; btn.textContent = 'Verifying…'; msg.textContent = '';
-  const body = new URLSearchParams({ action:'verifyCeo', pin:pin });
-  fetch(GAS(STOCK_ID), { method:'POST', body:body })
-    .then(r => r.json())
-    .then(d => {
-      if(d && d.valid){
-        sessionStorage.setItem('ibi_sup_ok','1');
-        document.getElementById('gate').style.display = 'none';
-        boot();
-      } else {
-        msg.textContent = 'Incorrect password.';
-        btn.disabled = false; btn.textContent = 'Unlock';
-        document.getElementById('gatePin').value = '';
-      }
-    })
-    .catch(() => { msg.textContent = 'Could not reach the server. Check your connection.';
-      btn.disabled = false; btn.textContent = 'Unlock'; });
+
+  /* Ask this project's own backend first — its CEO_PIN is a Script Property the
+     CEO controls. Fall back to Stock Availability's verifyCeo so a backend that
+     is down, or not yet carrying a CEO_PIN, can never lock the CEO out. NOTE:
+     the live Stock deployment is v1.4, whose PIN is hardcoded in the script, so
+     that fallback only ever accepts the old value. */
+  const ask = url => fetch(url, { method:'POST',
+      body:new URLSearchParams({ action:'verifyCeo', pin:pin }) })
+    .then(r => r.json()).catch(() => null);
+
+  const unlock = () => {
+    sessionStorage.setItem('ibi_sup_ok','1');
+    document.getElementById('gate').style.display = 'none';
+    boot();
+  };
+  const reject = why => {
+    msg.textContent = why;
+    btn.disabled = false; btn.textContent = 'Unlock';
+    document.getElementById('gatePin').value = '';
+  };
+
+  (async () => {
+    let notConfigured = false;
+    if(SUP_BACKEND){
+      const d = await ask(SUP_BACKEND);
+      if(d && d.valid) return unlock();
+      if(d && d.configured === false) notConfigured = true;
+    }
+    const s = await ask(GAS(STOCK_ID));
+    if(s && s.valid) return unlock();
+    if(s === null && !SUP_BACKEND) return reject('Could not reach the server. Check your connection.');
+    reject(notConfigured
+      ? 'No CEO password is set on the supervision backend yet — add Script Property CEO_PIN.'
+      : 'Incorrect password.');
+  })();
 }
 document.getElementById('gatePin').addEventListener('keydown', e => { if(e.key === 'Enter') tryUnlock(); });
 
@@ -647,7 +666,9 @@ async function fetchApp(app){
        ibiSetBackend('https://script.google.com/macros/s/…/exec')
    Server rows are authoritative: where they overlap a locally-detected change
    for the same record, the local one is dropped.                             */
-let SUP_BACKEND = load('ibi_sup_backend', '');
+const SUP_BACKEND_DEFAULT =
+  'https://script.google.com/macros/s/AKfycbzXLg5qTQfk1olIJGGkMXbPlM_rFWGi19b9GWDv1aFF8IDCBS5GsnGGMiZhJE9nAgCm4Q/exec';
+let SUP_BACKEND = load('ibi_sup_backend', SUP_BACKEND_DEFAULT);
 function ibiSetBackend(u){
   SUP_BACKEND = String(u || '').trim();
   save('ibi_sup_backend', SUP_BACKEND);
