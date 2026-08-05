@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="IBI Supervision">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Live top-management supervision of every IBI web app — see what each staff member is doing right now, coach them on data quality, and track daily output. Internal tool by India Business International.">
+<title>IBI Staff Supervision</title>
+
+<!-- ── Open Graph / social preview ── -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="India Business International">
+<meta property="og:url" content="https://supervision.indiabusinessinternational.online/">
+<meta property="og:title" content="IBI Staff Supervision">
+<meta property="og:description" content="Live top-management supervision of every IBI web app — see what each staff member is doing right now, coach them, and track daily output.">
+<meta property="og:image" content="https://supervision.indiabusinessinternational.online/og-banner.png">
+<meta property="og:image:secure_url" content="https://supervision.indiabusinessinternational.online/og-banner.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="IBI Staff Supervision — live staff activity across every IBI web app">
+<meta property="og:locale" content="en_IN">
+<!-- ── Twitter Card ── -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="IBI Staff Supervision">
+<meta name="twitter:description" content="Live top-management supervision of every IBI web app — see what each staff member is doing right now.">
+<meta name="twitter:image" content="https://supervision.indiabusinessinternational.online/og-banner.png">
+<meta name="twitter:image:alt" content="IBI Staff Supervision preview banner">
+
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Roboto+Condensed:wght@400;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- IBI halftone dot-grid mark as favicon -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 184 184'><rect width='184' height='184' rx='30' fill='%23000'/><g fill='%2300c5ff'><circle cx='24' cy='24' r='4.5'/><circle cx='58' cy='24' r='7.5'/><circle cx='92' cy='24' r='10.5'/><circle cx='126' cy='24' r='13.5'/><circle cx='160' cy='24' r='16.5'/><circle cx='24' cy='58' r='4.5'/><circle cx='58' cy='58' r='7.5'/><circle cx='92' cy='58' r='10.5'/><circle cx='126' cy='58' r='13.5'/><circle cx='160' cy='58' r='16.5'/><circle cx='24' cy='92' r='4.5'/><circle cx='58' cy='92' r='7.5'/><circle cx='92' cy='92' r='10.5'/><circle cx='126' cy='92' r='13.5'/><circle cx='160' cy='92' r='16.5'/><circle cx='24' cy='126' r='4.5'/><circle cx='58' cy='126' r='7.5'/><circle cx='92' cy='126' r='10.5'/><circle cx='126' cy='126' r='13.5'/><circle cx='160' cy='126' r='16.5'/><circle cx='24' cy='160' r='4.5'/><circle cx='58' cy='160' r='7.5'/><circle cx='92' cy='160' r='10.5'/><circle cx='126' cy='160' r='13.5'/><circle cx='160' cy='160' r='16.5'/></g></svg>">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cyan:#00c5ff; --cyan-dark:#009ac7; --cyan-dim:rgba(0,197,255,.13);
+  --black:#000; --bg:#0a0a0a; --bg2:#141414; --bg3:#1c1c1c; --bg4:#242424;
+  --text:#f0f0f0; --text2:#aaa; --text3:#666;
+  --border:#2a2a2a; --border2:#333;
+  --ok-bg:#0d2e0d; --ok:#5dd45d; --ok-bd:#1e5c1e;
+  --bad-bg:#2e0d0d; --bad:#ff7070; --bad-bd:#5c1e1e;
+  --warn-bg:#2e200d; --warn:#ffb84d; --warn-bd:#5c3e1e;
+  --info-bg:#0d1e2e; --info:#4db8ff; --info-bd:#1e3e5c;
+  --radius:10px; --radius-lg:14px; --radius-xl:18px;
+  --font:'Roboto',sans-serif; --cond:'Roboto Condensed',sans-serif; --mono:'Roboto Mono',monospace;
+}
+body[data-theme="light"]{
+  --bg:#eef2f6; --bg2:#fff; --bg3:#e6ebf0; --bg4:#dae1e8;
+  --text:#12121e; --text2:#4a5560; --text3:#8a95a0;
+  --border:#ccd5de; --border2:#b4c0cc; --cyan-dim:rgba(0,120,170,.10);
+  --ok-bg:#e6f7e6; --ok:#186b18; --ok-bd:#a3d9a3;
+  --bad-bg:#fdeaea; --bad:#8b1a1a; --bad-bd:#f5a5a5;
+  --warn-bg:#fef6e4; --warn:#7a4a00; --warn-bd:#ffd080;
+  --info-bg:#e4f0fd; --info:#0c447c; --info-bd:#85b7eb;
+}
+html,body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+body{color-scheme:dark} body[data-theme="light"]{color-scheme:light}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:5px}
+::-webkit-scrollbar-thumb:hover{background:var(--cyan-dark)}
+
+/* ══ GATE ══ */
+#gate{position:fixed;inset:0;z-index:9000;background:var(--black);display:flex;align-items:center;justify-content:center;padding:20px}
+.gate-card{width:100%;max-width:400px;background:var(--bg2);border:1px solid var(--border);border-top:3px solid var(--cyan);border-radius:var(--radius-xl);padding:34px 28px;text-align:center}
+.gate-card h1{font-family:var(--cond);font-size:1.45rem;letter-spacing:.5px;margin:14px 0 4px;text-transform:uppercase}
+.gate-card p{color:var(--text2);font-size:.85rem;line-height:1.6;margin-bottom:22px}
+.gate-card input{width:100%;padding:13px 15px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-size:1.15rem;text-align:center;letter-spacing:5px;font-family:var(--mono)}
+.gate-card input:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px var(--cyan-dim)}
+.gate-card button{width:100%;margin-top:14px;padding:13px;background:var(--cyan);color:#001018;border:none;border-radius:var(--radius);font-weight:700;font-size:.95rem;cursor:pointer;letter-spacing:.6px}
+.gate-card button:hover{background:var(--cyan-dark)}
+.gate-card button:disabled{opacity:.5;cursor:not-allowed}
+#gateMsg{margin-top:13px;font-size:.82rem;min-height:19px;color:var(--bad)}
+.gate-note{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:.7rem;color:var(--text3);line-height:1.6}
+
+/* ══ TOPBAR ══ */
+.topbar{background:var(--black);border-bottom:2px solid var(--cyan);position:sticky;top:0;z-index:200;padding:0 14px}
+.topbar-inner{max-width:1500px;margin:0 auto;display:flex;align-items:center;gap:12px;height:58px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand svg{width:26px;height:26px;flex-shrink:0}
+.brand-txt{font-family:var(--cond);font-weight:700;font-size:1.06rem;letter-spacing:.6px;color:#fff;white-space:nowrap;text-transform:uppercase}
+.ver-badge{background:var(--cyan-dim);color:var(--cyan);border:1px solid var(--cyan-dark);border-radius:20px;padding:2px 10px;font-size:.66rem;font-weight:700;font-family:var(--mono);cursor:help;white-space:nowrap}
+.tb-spacer{flex:1}
+.livepill{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:5px 12px;font-size:.72rem;color:var(--text2);white-space:nowrap}
+.livepill.on{border-color:var(--ok-bd);background:var(--ok-bg);color:var(--ok)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--text3);flex-shrink:0}
+.dot.live{background:#22c55e;animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,.55)}50%{opacity:.65;box-shadow:0 0 0 6px rgba(34,197,94,0)}}
+.clock{font-family:var(--mono);font-size:.82rem;color:var(--cyan);white-space:nowrap}
+.iconbtn{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);width:34px;height:34px;border-radius:9px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.iconbtn:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* ══ LAYOUT ══ */
+.wrap{max-width:1500px;margin:0 auto;padding:16px 14px 60px}
+.sect-h{font-family:var(--cond);text-transform:uppercase;letter-spacing:1px;font-size:.78rem;color:var(--text3);margin:22px 0 10px;display:flex;align-items:center;gap:9px}
+.sect-h::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ══ STAFF CARDS ══ */
+.staff-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:13px}
+.staff-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;position:relative;overflow:hidden}
+.staff-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--text3)}
+.staff-card.duty::before{background:#22c55e}
+.staff-top{display:flex;align-items:center;gap:11px;margin-bottom:13px}
+.avatar{width:44px;height:44px;border-radius:50%;background:var(--bg4);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:var(--cond);font-weight:700;font-size:1.05rem;color:var(--cyan);flex-shrink:0}
+.staff-card.duty .avatar{border-color:#22c55e}
+.staff-name{font-weight:600;font-size:1rem;line-height:1.25}
+.staff-sub{font-size:.73rem;color:var(--text2);margin-top:2px}
+.duty-tag{margin-left:auto;font-size:.64rem;font-weight:700;letter-spacing:.7px;padding:4px 9px;border-radius:6px;background:var(--bg3);color:var(--text3);border:1px solid var(--border2);white-space:nowrap}
+.duty-tag.on{background:var(--ok-bg);color:var(--ok);border-color:var(--ok-bd)}
+.staff-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.sstat{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:8px 6px;text-align:center}
+.sstat b{display:block;font-family:var(--cond);font-size:1.3rem;color:var(--cyan);line-height:1.1}
+.sstat span{font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:.4px}
+.nowline{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--cyan);border-radius:8px;padding:9px 11px;font-size:.79rem;line-height:1.5}
+.nowline .nl-h{font-size:.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px}
+.nowline em{color:var(--text3);font-style:normal}
+.assign-row{margin-top:11px;display:flex;align-items:center;gap:8px;font-size:.72rem;color:var(--text3)}
+.assign-row select{flex:1;background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:7px;padding:6px 8px;font-size:.75rem;font-family:var(--font)}
+.assign-row select:focus{outline:none;border-color:var(--cyan)}
+.punchstrip{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.punch{font-family:var(--mono);font-size:.63rem;padding:2px 7px;border-radius:5px;background:var(--bg3);border:1px solid var(--border)}
+.punch.in{color:var(--ok);border-color:var(--ok-bd)} .punch.out{color:var(--warn);border-color:var(--warn-bd)}
+
+/* ══ TABS ══ */
+.tabs{display:flex;gap:6px;margin:20px 0 14px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:0}
+.tab{background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);padding:9px 14px;font-size:.85rem;font-weight:500;cursor:pointer;font-family:var(--font);white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.tab .cnt{background:var(--bg4);border-radius:9px;padding:1px 6px;font-size:.65rem;margin-left:5px;font-family:var(--mono)}
+.tab.active .cnt{background:var(--cyan);color:#001018}
+.pane{display:none} .pane.active{display:block}
+
+/* ══ FILTERS ══ */
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px;align-items:center}
+.chip{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);border-radius:18px;padding:5px 12px;font-size:.74rem;cursor:pointer;white-space:nowrap;font-family:var(--font)}
+.chip:hover{border-color:var(--cyan)}
+.chip.on{background:var(--cyan);color:#001018;border-color:var(--cyan);font-weight:600}
+.searchbox{flex:1;min-width:170px;background:var(--bg3);border:1px solid var(--border2);border-radius:18px;padding:6px 14px;color:var(--text);font-size:.78rem;font-family:var(--font)}
+.searchbox:focus{outline:none;border-color:var(--cyan)}
+
+/* ══ FEED ══ */
+.feed{display:flex;flex-direction:column;gap:6px}
+.ev{display:flex;gap:11px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 13px;align-items:flex-start}
+.ev.fresh{animation:flashin 2.4s ease-out}
+@keyframes flashin{0%{background:var(--cyan-dim);border-color:var(--cyan)}100%{background:var(--bg2);border-color:var(--border)}}
+.ev-time{font-family:var(--mono);font-size:.7rem;color:var(--text3);white-space:nowrap;padding-top:2px;min-width:62px}
+.ev-body{flex:1;min-width:0}
+.ev-head{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:3px}
+.appchip{font-size:.62rem;font-weight:700;letter-spacing:.4px;padding:2px 8px;border-radius:5px;text-transform:uppercase;white-space:nowrap}
+.actchip{font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:5px;letter-spacing:.4px;text-transform:uppercase}
+.act-add{background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok-bd)}
+.act-edit{background:var(--info-bg);color:var(--info);border:1px solid var(--info-bd)}
+.act-del{background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad-bd)}
+.whochip{font-size:.62rem;padding:2px 7px;border-radius:5px;background:var(--bg4);color:var(--text2);border:1px solid var(--border2);white-space:nowrap}
+.whochip.guess{opacity:.75;font-style:italic}
+.ev-label{font-size:.85rem;line-height:1.35;word-break:break-word}
+.ev-changes{margin-top:5px;display:flex;flex-direction:column;gap:2px}
+.chg{font-size:.73rem;color:var(--text2);font-family:var(--mono);word-break:break-word}
+.chg b{color:var(--text);font-weight:500;font-family:var(--font)}
+.chg .from{color:var(--bad);text-decoration:line-through;opacity:.8}
+.chg .to{color:var(--ok)}
+.empty{text-align:center;padding:44px 20px;color:var(--text3);font-size:.85rem;line-height:1.7}
+.empty .big{font-size:2rem;display:block;margin-bottom:10px;opacity:.5}
+
+/* ══ HEALTH GRID ══ */
+.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:11px}
+.hcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:13px}
+.hcard-top{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.hname{font-weight:600;font-size:.87rem;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hstat{font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:5px;letter-spacing:.4px}
+.hs-ok{background:var(--ok-bg);color:var(--ok)} .hs-bad{background:var(--bad-bg);color:var(--bad)}
+.hs-wait{background:var(--warn-bg);color:var(--warn)}
+.hrow{display:flex;justify-content:space-between;font-size:.74rem;padding:3px 0;color:var(--text2)}
+.hrow b{color:var(--text);font-weight:500;font-family:var(--mono);font-size:.73rem}
+.hnote{margin-top:8px;font-size:.66rem;color:var(--text3);line-height:1.5;border-top:1px solid var(--border);padding-top:7px}
+.hlink{color:var(--cyan);text-decoration:none;font-size:.68rem}
+.hlink:hover{text-decoration:underline}
+
+/* ══ COACHING ══ */
+.coach{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--warn);border-radius:var(--radius);padding:13px 15px;margin-bottom:10px}
+.coach.sev-hi{border-left-color:var(--bad)} .coach.sev-lo{border-left-color:var(--info)}
+.coach-h{display:flex;align-items:center;gap:9px;margin-bottom:6px;flex-wrap:wrap}
+.coach-t{font-weight:600;font-size:.9rem}
+.coach-n{background:var(--bg4);border-radius:9px;padding:1px 8px;font-size:.68rem;font-family:var(--mono);color:var(--cyan)}
+.coach-d{font-size:.79rem;color:var(--text2);line-height:1.6}
+.coach-say{margin-top:9px;background:var(--bg3);border:1px dashed var(--border2);border-radius:8px;padding:9px 11px;font-size:.78rem;line-height:1.6;color:var(--text)}
+.coach-say b{color:var(--cyan);font-size:.64rem;text-transform:uppercase;letter-spacing:.7px;display:block;margin-bottom:4px}
+.coach-eg{margin-top:7px;font-size:.71rem;color:var(--text3);font-family:var(--mono);line-height:1.6;word-break:break-word}
+
+/* ══ TODAY ══ */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:11px;margin-bottom:16px}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center}
+.kpi b{display:block;font-family:var(--cond);font-size:1.9rem;color:var(--cyan);line-height:1.05}
+.kpi span{font-size:.66rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.bars{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:15px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bar-lb{width:130px;font-size:.75rem;color:var(--text2);text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-tr{flex:1;background:var(--bg3);border-radius:5px;height:19px;overflow:hidden;position:relative}
+.bar-fl{height:100%;border-radius:5px;min-width:2px;transition:width .5s}
+.bar-vl{font-family:var(--mono);font-size:.73rem;color:var(--text);width:42px;flex-shrink:0}
+.hourgrid{display:flex;gap:2px;align-items:flex-end;height:70px;margin-top:12px}
+.hourbar{flex:1;background:var(--cyan);border-radius:2px 2px 0 0;min-height:2px;opacity:.85;position:relative}
+.hourbar:hover{opacity:1}
+.hourlbl{display:flex;gap:2px;margin-top:4px}
+.hourlbl span{flex:1;text-align:center;font-size:.53rem;color:var(--text3);font-family:var(--mono)}
+
+/* ══ MISC ══ */
+.banner{border-radius:var(--radius);padding:11px 15px;font-size:.8rem;line-height:1.6;margin-bottom:12px;display:flex;gap:10px;align-items:flex-start}
+.banner.warn{background:var(--warn-bg);border:1px solid var(--warn-bd);color:var(--warn)}
+.banner.info{background:var(--info-bg);border:1px solid var(--info-bd);color:var(--info)}
+.banner b{font-weight:700}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--cyan);color:var(--text);padding:11px 20px;border-radius:24px;font-size:.82rem;z-index:9500;opacity:0;pointer-events:none;transition:opacity .25s;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+footer{text-align:center;padding:26px 14px;color:var(--text3);font-size:.7rem;line-height:1.8;border-top:1px solid var(--border);margin-top:30px}
+footer b{color:var(--cyan)}
+@media(max-width:600px){
+  .topbar-inner{height:52px;gap:8px} .brand-txt{font-size:.9rem}
+  .clock{display:none} .wrap{padding:12px 10px 50px}
+  .bar-lb{width:88px;font-size:.68rem}
+  .ev-time{min-width:55px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ CEO GATE ══════════════ -->
+<div id="gate">
+  <div class="gate-card">
+    <svg viewBox="0 0 184 184" width="52" height="52"><rect width="184" height="184" rx="30" fill="#000"/><g fill="#00c5ff"><circle cx="24" cy="24" r="4.5"/><circle cx="58" cy="24" r="7.5"/><circle cx="92" cy="24" r="10.5"/><circle cx="126" cy="24" r="13.5"/><circle cx="160" cy="24" r="16.5"/><circle cx="24" cy="58" r="4.5"/><circle cx="58" cy="58" r="7.5"/><circle cx="92" cy="58" r="10.5"/><circle cx="126" cy="58" r="13.5"/><circle cx="160" cy="58" r="16.5"/><circle cx="24" cy="92" r="4.5"/><circle cx="58" cy="92" r="7.5"/><circle cx="92" cy="92" r="10.5"/><circle cx="126" cy="92" r="13.5"/><circle cx="160" cy="92" r="16.5"/><circle cx="24" cy="126" r="4.5"/><circle cx="58" cy="126" r="7.5"/><circle cx="92" cy="126" r="10.5"/><circle cx="126" cy="126" r="13.5"/><circle cx="160" cy="126" r="16.5"/><circle cx="24" cy="160" r="4.5"/><circle cx="58" cy="160" r="7.5"/><circle cx="92" cy="160" r="10.5"/><circle cx="126" cy="160" r="13.5"/><circle cx="160" cy="160" r="16.5"/></g></svg>
+    <h1>Staff Supervision</h1>
+    <p>Top-management access only.<br>Enter the CEO password to continue.</p>
+    <input type="password" id="gatePin" inputmode="numeric" autocomplete="off" placeholder="••••" maxlength="24">
+    <button id="gateBtn" onclick="tryUnlock()">Unlock</button>
+    <div id="gateMsg"></div>
+    <div class="gate-note">The password is verified on the server and is never stored in this page. India Business International — internal use only.</div>
+  </div>
+</div>
+
+<!-- ══════════════ TOPBAR ══════════════ -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <svg viewBox="0 0 184 184"><rect width="184" height="184" rx="30" fill="#000"/><g fill="#00c5ff"><circle cx="24" cy="24" r="4.5"/><circle cx="58" cy="24" r="7.5"/><circle cx="92" cy="24" r="10.5"/><circle cx="126" cy="24" r="13.5"/><circle cx="160" cy="24" r="16.5"/><circle cx="24" cy="58" r="4.5"/><circle cx="58" cy="58" r="7.5"/><circle cx="92" cy="58" r="10.5"/><circle cx="126" cy="58" r="13.5"/><circle cx="160" cy="58" r="16.5"/><circle cx="24" cy="92" r="4.5"/><circle cx="58" cy="92" r="7.5"/><circle cx="92" cy="92" r="10.5"/><circle cx="126" cy="92" r="13.5"/><circle cx="160" cy="92" r="16.5"/><circle cx="24" cy="126" r="4.5"/><circle cx="58" cy="126" r="7.5"/><circle cx="92" cy="126" r="10.5"/><circle cx="126" cy="126" r="13.5"/><circle cx="160" cy="126" r="16.5"/><circle cx="24" cy="160" r="4.5"/><circle cx="58" cy="160" r="7.5"/><circle cx="92" cy="160" r="10.5"/><circle cx="126" cy="160" r="13.5"/><circle cx="160" cy="160" r="16.5"/></g></svg>
+      <span class="brand-txt">IBI Supervision</span>
+      <span class="ver-badge" id="verBadge" title="">v1.0</span>
+    </div>
+    <div class="tb-spacer"></div>
+    <div class="livepill" id="livePill"><span class="dot" id="liveDot"></span><span id="liveTxt">idle</span></div>
+    <span class="clock" id="clock">--:--:--</span>
+    <button class="iconbtn" id="pauseBtn" onclick="togglePoll()" title="Pause / resume live polling">⏸</button>
+    <button class="iconbtn" onclick="pollAll(true)" title="Refresh now">⟳</button>
+    <button class="iconbtn" onclick="toggleTheme()" title="Light / dark">◐</button>
+  </div>
+</div>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="wrap">
+
+  <div id="topBanner"></div>
+
+  <div class="sect-h">Staff on duty</div>
+  <div class="staff-grid" id="staffGrid"></div>
+
+  <div class="tabs">
+    <button class="tab active" data-pane="live" onclick="showPane('live')">🔴 Live Feed <span class="cnt" id="cntLive">0</span></button>
+    <button class="tab" data-pane="today" onclick="showPane('today')">📊 Today</button>
+    <button class="tab" data-pane="coach" onclick="showPane('coach')">🎓 Coaching <span class="cnt" id="cntCoach">0</span></button>
+    <button class="tab" data-pane="health" onclick="showPane('health')">🩺 App Health</button>
+  </div>
+
+  <!-- LIVE -->
+  <div class="pane active" id="pane-live">
+    <div class="filters">
+      <button class="chip on" data-f="all" onclick="setFilter('all')">All apps</button>
+      <span id="appChips"></span>
+      <input class="searchbox" id="feedSearch" placeholder="Search product, order, staff…" oninput="renderFeed()">
+    </div>
+    <div class="feed" id="feed"></div>
+  </div>
+
+  <!-- TODAY -->
+  <div class="pane" id="pane-today">
+    <div class="kpis" id="kpis"></div>
+    <div class="bars" id="todayBars"></div>
+  </div>
+
+  <!-- COACHING -->
+  <div class="pane" id="pane-coach">
+    <div class="banner info">💡 <div>These are data-quality gaps found in the live sheets right now. Each card includes a ready-to-use coaching line you can send your staff.</div></div>
+    <div id="coachList"></div>
+  </div>
+
+  <!-- HEALTH -->
+  <div class="pane" id="pane-health">
+    <div class="hgrid" id="healthGrid"></div>
+  </div>
+
+  <footer>
+    <b>IBI Staff Supervision</b> — India Business International · <span id="footVer">v1.0</span><br>
+    Read-only management view. This tool never writes to any staff app.
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   IBI STAFF SUPERVISION — live cross-app staff activity monitor
+   ══════════════════════════════════════════════════════════════════════ */
+window.IBI_VERSION = 'v1.0';
+window.IBI_VERSION_DATE = '5 Aug 2026';
+window.IBI_VERSION_NOTE = 'First release — live activity feed across 7 staff web apps, '
+  + 'attendance-aware staff cards, coaching finder and app-health grid.';
+
+const GAS = id => 'https://script.google.com/macros/s/' + id + '/exec';
+
+/* ── Staff roster: must match STAFF_NAMES in the Attendance backend ── */
+const STAFF = [
+  { name:'S. Aswin', initials:'SA' },
+  { name:'M. Ajay',  initials:'MA' }
+];
+const ATTEND_ID    = 'AKfycbztj_cU2LtHlHztnFk9wP84pDe8BwLbtzfSoiZfVwT_d5cc4PDjM_qTV9m9LPUxfPbj6Q';
+const ATTEND_TOKEN = 'IBI_ATTEND_2026';
+const STOCK_ID     = 'AKfycbzXTGd4PyjkGKoMr64VAYFKxKN23yZEzaMsUViOCJ8xEIvN9c8XgY00VF1VB6uBvslvOg';
+
+/* ══ APP REGISTRY ══
+   Each entry knows how to fetch its app, turn the payload into comparable
+   records, and describe a change in plain English. `watch` lists the fields
+   whose change counts as staff work.                                     */
+const APPS = [
+  {
+    key:'stock', name:'Stock Availability', short:'Stock', colour:'#00c5ff',
+    site:'https://stock.indiabusinessinternational.online/',
+    url:GAS(STOCK_ID), method:'GET', params:{action:'getAll'},
+    pick:d => d.items || [],
+    id:r => r.id, label:r => r.product,
+    stamp:r => joinDT(r.date, r.time),
+    watch:['packed','loose','damage','hsn','gst','category','rating','keywords','amazonAvg','flipkartAvg'],
+    nice:{packed:'Packed',loose:'Loose',damage:'Damage',hsn:'HSN',gst:'GST %',category:'Category',
+          rating:'Rating',keywords:'Keywords',amazonAvg:'Amazon avg',flipkartAvg:'Flipkart avg'}
+  },
+  {
+    key:'dims', name:'Dimensions Logger', short:'Dimensions', colour:'#a78bfa',
+    site:'https://dimensions.indiabusinessinternational.online/',
+    url:GAS('AKfycbyFDqcFxVo0TyAmu3RvqWn-jQKan8zR7D8ZAebvb_sJSZwdvLI9P1CVrAAi3HPUVk92'),
+    method:'GET', params:{action:'getAll'},
+    pick:d => d.items || [],
+    id:r => r.id, label:r => r.product,
+    stamp:r => joinDT(r.date, r.time),
+    watch:['bis','pLength','pWidth','pHeight','pWeight','pCapacity','cartonWeight','kLength','kWidth','kHeight','kWeight'],
+    nice:{bis:'BIS',pLength:'Product L',pWidth:'Product W',pHeight:'Product H',pWeight:'Product wt',
+          pCapacity:'Capacity',cartonWeight:'Carton wt',kLength:'Pack L',kWidth:'Pack W',kHeight:'Pack H',kWeight:'Pack wt'}
+  },
+  {
+    key:'returns', name:'Returns Logger', short:'Returns', colour:'#fb923c',
+    site:'https://returns.indiabusinessinternational.online/',
+    url:GAS('AKfycbyPW84MZnqZ7bxuuI4f7We7ymB4xW9zZZOpUdhm0Jv-rXd_hAEs-J_8B_MeHczafHDLTQ'),
+    method:'GET', params:{action:'getAll'},
+    pick:d => d.items || [],
+    id:r => r.id, label:r => r.product,
+    stamp:r => joinDT(r.date, r.time),
+    watch:['platform','courier','orderId','condition','address','returnDate'],
+    nice:{platform:'Platform',courier:'Courier',orderId:'Order ID',condition:'Condition',
+          address:'Address',returnDate:'Return date'}
+  },
+  {
+    key:'tracker', name:'Package Tracker', short:'Packages', colour:'#34d399',
+    site:'https://database.indiabusinessinternational.online/',
+    url:GAS('AKfycbxLPmBJmkgFbO-5Ew5uObdVGwMNBXQ8oJCmssIue_Av_G2iaRAaArGzbRNaF7gMzFYsEg'),
+    method:'POST', params:{action:'loadPackages'},
+    pick:d => Array.isArray(d.data) ? d.data : (d.packages || []),
+    id:r => 'row' + r.rowIndex, label:r => (r.orderId || r.awb || 'Package') + ' · ' + (r.platform || ''),
+    stamp:r => r.savedOn,
+    watch:['status','statusDetail','awb','courier','products','qty','amount','shipDate','expectedDelivery','buyerName','pincode'],
+    nice:{status:'Status',statusDetail:'Detail',awb:'AWB',courier:'Courier',products:'Products',qty:'Qty',
+          amount:'Amount ₹',shipDate:'Ship date',expectedDelivery:'Expected',buyerName:'Buyer',pincode:'Pincode'}
+  },
+  {
+    key:'pickup', name:'Pickup Manager', short:'Pickup', colour:'#f472b6',
+    site:'https://pickup.indiabusinessinternational.online/',
+    url:GAS('AKfycbyBTyaD1gfXBB_JOupo6swVEfw1pS9KfdV9jCTVKZuL9pQZfi51SNu1HZCzBghJmQHD'),
+    method:'GET', params:{action:'loadPackages'},
+    pick:d => d.dispatches || [],
+    id:r => r.orderID, label:r => r.orderID + ' · ' + (r.platform || ''),
+    stamp:r => r.date,
+    watch:['platform','courier','date'],
+    nice:{platform:'Platform',courier:'Courier',date:'Dispatch date'},
+    dayOnly:true,
+    /* Measured 36s cold / 6s warm — it needs more headroom than the others,
+       and an aborted call does not leave the script warm for the retry. */
+    timeout:55000
+  },
+  {
+    key:'tasks', name:'Task Manager', short:'Tasks', colour:'#fbbf24',
+    site:'https://task.indiabusinessinternational.online/',
+    url:GAS('AKfycbw6mLs_6ejec_P8_LPV90LAaf0gj0Bsm0XRWu_VeNyVsrvFAo_APJwmRBpD66lpm6UqBg'),
+    method:'GET', params:{action:'load'},
+    pick:d => (d.db && (d.db.tasks || d.db.records)) || d.tasks || [],
+    id:r => r.id, label:r => r.title,
+    stamp:r => r.completedDate && r.completedDate !== 'None' ? r.completedDate : r.createdDate,
+    who:r => r.assignedTo,
+    watch:['status','progress','staffNotes','ceoFeedback','priority','targetDate','completedDate','assignedTo'],
+    nice:{status:'Status',progress:'Progress %',staffNotes:'Staff notes',ceoFeedback:'CEO feedback',
+          priority:'Priority',targetDate:'Target',completedDate:'Completed',assignedTo:'Assigned to'}
+  },
+  {
+    key:'market', name:'eCommerce Marketplace', short:'Marketplace', colour:'#8b5cf6',
+    site:'https://indiabusinessinternational.online/',
+    url:GAS('AKfycbyJw77dIdd0f2e8UDJIRefW_f07UH_5KWtoAyJ3iA-i6NaZWCXrCLy4t3IY-_vr7sq9'),
+    method:'GET', params:{action:'getApprovedProducts'},
+    pick:d => d.products || [],
+    id:r => r.productId, label:r => r.title,
+    /* getApprovedProducts does not return the sheet's UPDATED_ON column yet,
+       so this app is change-detection only until the backend patch is applied. */
+    stamp:r => r.updatedOn || '',
+    watch:['title','price','mrp','stock','img','additionalImgs','variations','category','brand',
+           'description','bullets','productDimensions','packageDimensions','minQty','maxQty'],
+    nice:{title:'Title',price:'Price ₹',mrp:'MRP ₹',stock:'Stock',img:'Main image',
+          additionalImgs:'Extra images',variations:'Variations',category:'Category',brand:'Brand',
+          description:'Description',bullets:'Bullets',productDimensions:'Product dims',
+          packageDimensions:'Package dims',minQty:'Min qty',maxQty:'Max qty'},
+    noStamp:true
+  }
+];
+
+/* ══ STATE ══ */
+const LS = {
+  events:'ibi_sup_events', snap:'ibi_sup_snap_', assign:'ibi_sup_assign',
+  theme:'ibi_sup_theme', seen:'ibi_sup_seen'
+};
+let events   = load(LS.events, []);
+let assign   = load(LS.assign, { market:'M. Ajay', stock:'S. Aswin' });
+let attend   = {};            // staffName -> {state, punches, since}
+let health   = {};            // appKey -> {ok, count, last, err, ms}
+let records  = {};            // appKey -> [normalised records]
+let filter   = 'all';
+let polling  = true;
+let busy     = false;
+let firstRun = !localStorage.getItem(LS.seen);
+let pollTimer= null;
+const POLL_MS = 45000;
+
+function load(k, d){ try{ const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; }catch(e){ return d; } }
+function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+/* ══ HELPERS ══ */
+function joinDT(d, t){
+  if(!d) return '';
+  if(!t) return String(d);
+  return String(d) + ' ' + String(t);
+}
+/* Parse the several date shapes the IBI backends emit into a JS Date. */
+function toDate(v){
+  if(!v) return null;
+  if(v instanceof Date) return isNaN(v) ? null : v;
+  const s = String(v).trim();
+  if(!s || s === 'None') return null;
+  // ISO with time  -> 2026-05-04T12:11:23.000Z
+  if(/^\d{4}-\d{2}-\d{2}T/.test(s)){ const d = new Date(s); return isNaN(d) ? null : d; }
+  // "2026-08-05 11:05:08 AM"
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?)?$/i);
+  if(m){
+    let h = m[4] ? parseInt(m[4],10) : 0;
+    const ap = (m[7]||'').toUpperCase();
+    if(ap === 'PM' && h < 12) h += 12;
+    if(ap === 'AM' && h === 12) h = 0;
+    return new Date(+m[1], +m[2]-1, +m[3], h, m[5]?+m[5]:0, m[6]?+m[6]:0);
+  }
+  // "05/08/2026, 7:12:33 pm"  (en-IN toLocaleString — day first)
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}),?\s*(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(am|pm)?$/i);
+  if(m){
+    let h = parseInt(m[4],10); const ap = (m[7]||'').toLowerCase();
+    if(ap === 'pm' && h < 12) h += 12;
+    if(ap === 'am' && h === 12) h = 0;
+    return new Date(+m[3], +m[2]-1, +m[1], h, +m[5], m[6]?+m[6]:0);
+  }
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+const IST = 'en-IN';
+function hhmmss(d){ return d ? d.toLocaleTimeString(IST,{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}) : '--:--:--'; }
+function hhmm(d){ return d ? d.toLocaleTimeString(IST,{hour:'2-digit',minute:'2-digit',hour12:true}) : '—'; }
+function isToday(d){ if(!d) return false; const n = new Date();
+  return d.getDate()===n.getDate() && d.getMonth()===n.getMonth() && d.getFullYear()===n.getFullYear(); }
+function ago(d){
+  if(!d) return 'never';
+  const s = Math.floor((Date.now() - d.getTime())/1000);
+  if(s < 0)    return 'just now';
+  if(s < 60)   return s + 's ago';
+  if(s < 3600) return Math.floor(s/60) + 'm ago';
+  if(s < 86400)return Math.floor(s/3600) + 'h ago';
+  return Math.floor(s/86400) + 'd ago';
+}
+function esc(s){ return String(s == null ? '' : s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function trim(s, n){ s = String(s == null ? '' : s); return s.length > n ? s.slice(0,n) + '…' : s; }
+function appOf(k){ return APPS.find(a => a.key === k); }
+function toast(m){ const t = document.getElementById('toast'); t.textContent = m;
+  t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove('show'), 2600); }
+
+/* ══ GATE ══ */
+function tryUnlock(){
+  const pin = document.getElementById('gatePin').value.trim();
+  const btn = document.getElementById('gateBtn');
+  const msg = document.getElementById('gateMsg');
+  if(!pin){ msg.textContent = 'Enter the CEO password.'; return; }
+  btn.disabled = true; btn.textContent = 'Verifying…'; msg.textContent = '';
+  const body = new URLSearchParams({ action:'verifyCeo', pin:pin });
+  fetch(GAS(STOCK_ID), { method:'POST', body:body })
+    .then(r => r.json())
+    .then(d => {
+      if(d && d.valid){
+        sessionStorage.setItem('ibi_sup_ok','1');
+        document.getElementById('gate').style.display = 'none';
+        boot();
+      } else {
+        msg.textContent = 'Incorrect password.';
+        btn.disabled = false; btn.textContent = 'Unlock';
+        document.getElementById('gatePin').value = '';
+      }
+    })
+    .catch(() => { msg.textContent = 'Could not reach the server. Check your connection.';
+      btn.disabled = false; btn.textContent = 'Unlock'; });
+}
+document.getElementById('gatePin').addEventListener('keydown', e => { if(e.key === 'Enter') tryUnlock(); });
+
+/* ══ FETCH ══
+   Apps Script cold-starts can take 30s+ (Pickup Manager measured at 36s cold,
+   6s warm), and a stalled script returns an HTML error page rather than JSON.
+   So every call gets its own abort timeout and one retry, and a failure is
+   contained to that app — the rest of the poll still completes.            */
+const FETCH_MS = 30000;
+async function rawFetch(app){
+  const ctl = new AbortController();
+  const kill = setTimeout(() => ctl.abort(), app.timeout || FETCH_MS);
+  try{
+    const res = app.method === 'POST'
+      ? await fetch(app.url, { method:'POST', body:new URLSearchParams(app.params), signal:ctl.signal })
+      : await fetch(app.url + '?' + new URLSearchParams(app.params), { signal:ctl.signal });
+    const txt = await res.text();
+    try{ return JSON.parse(txt); }
+    catch(e){
+      throw new Error(txt.slice(0,60).indexOf('<') !== -1
+        ? 'Backend returned an error page, not data (script busy or timed out)'
+        : 'Unreadable response from backend');
+    }
+  } finally { clearTimeout(kill); }
+}
+async function fetchApp(app){
+  const t0 = Date.now();
+  try{
+    let data;
+    try{ data = await rawFetch(app); }
+    catch(first){
+      // Retry even on a timeout: the aborted call leaves the Apps Script warm,
+      // so the second attempt usually returns in a few seconds.
+      await new Promise(r => setTimeout(r, 1200));
+      data = await rawFetch(app);
+    }
+    const raw  = app.pick(data) || [];
+    const recs = raw.map(r => {
+      const o = { _id:String(app.id(r) == null ? '' : app.id(r)),
+                  _label:String(app.label(r) || '(untitled)'),
+                  _stamp:app.stamp ? app.stamp(r) : '',
+                  _who:app.who ? app.who(r) : '', _raw:r };
+      app.watch.forEach(f => { o[f] = r[f] == null ? '' : String(r[f]); });
+      return o;
+    }).filter(r => r._id);
+    health[app.key] = { ok:true, count:recs.length, ms:Date.now()-t0, err:'' };
+    return recs;
+  }catch(err){
+    const msg = err && err.name === 'AbortError'
+      ? 'Timed out after ' + ((app.timeout || FETCH_MS)/1000) + 's'
+      : String((err && err.message) || err).slice(0,90);
+    health[app.key] = { ok:false, count:0, ms:Date.now()-t0, err:msg };
+    return null;
+  }
+}
+
+/* ══ ATTENDANCE ══ */
+async function fetchAttendance(){
+  await Promise.all(STAFF.map(async s => {
+    try{
+      const q = new URLSearchParams({ action:'getState', staffName:s.name, token:ATTEND_TOKEN });
+      const r = await fetch(GAS(ATTEND_ID) + '?' + q);
+      const d = await r.json();
+      if(d && d.status === 'success'){
+        const punches = d.punches || [];
+        let since = null;
+        if(d.currentState === 'IN'){
+          for(let i = punches.length - 1; i >= 0; i--){
+            if(punches[i].type === 'IN'){ since = punchToDate(punches[i].time); break; }
+          }
+        }
+        attend[s.name] = { state:d.currentState, punches:punches, since:since, ok:true };
+      } else {
+        attend[s.name] = { state:'?', punches:[], since:null, ok:false };
+      }
+    }catch(e){ attend[s.name] = { state:'?', punches:[], since:null, ok:false }; }
+  }));
+}
+function punchToDate(t){
+  const m = String(t||'').match(/^(\d{1,2}):(\d{2}):?(\d{2})?\s*(AM|PM)?$/i);
+  if(!m) return null;
+  let h = parseInt(m[1],10); const ap = (m[4]||'').toUpperCase();
+  if(ap === 'PM' && h < 12) h += 12;
+  if(ap === 'AM' && h === 12) h = 0;
+  const n = new Date();
+  return new Date(n.getFullYear(), n.getMonth(), n.getDate(), h, +m[2], m[3]?+m[3]:0);
+}
+
+/* ══ DIFF ENGINE ══
+   The backends expose current state, not an event log. So we keep a snapshot
+   of every record and diff it on each poll — that is what produces genuine
+   "packed 31 → 28" events. On the very first run there is no snapshot, so we
+   backfill today's activity from each record's own last-updated stamp.      */
+function diffApp(app, recs){
+  const key  = LS.snap + app.key;
+  const prev = load(key, null);
+  const now  = {};
+  recs.forEach(r => {
+    const sig = {};
+    app.watch.forEach(f => sig[f] = r[f]);
+    sig._l = r._label; sig._s = r._stamp;
+    now[r._id] = sig;
+  });
+
+  const out = [];
+  if(prev === null){
+    // Baseline run — reconstruct today from the per-row timestamps.
+    if(!app.noStamp){
+      recs.forEach(r => {
+        const d = toDate(r._stamp);
+        if(d && isToday(d)){
+          out.push(mkEvent(app, 'edit', r._id, r._label, [], d, r._who, true));
+        }
+      });
+    }
+  } else {
+    Object.keys(now).forEach(id => {
+      const a = prev[id], b = now[id];
+      if(!a){
+        out.push(mkEvent(app, 'add', id, b._l, [], stampDate(app, b), whoOf(now[id])));
+      } else {
+        const chg = [];
+        app.watch.forEach(f => {
+          if((a[f]||'') !== (b[f]||'')) chg.push({ f:f, from:a[f]||'', to:b[f]||'' });
+        });
+        if(a._l !== b._l) chg.push({ f:'_title', from:a._l, to:b._l });
+        if(chg.length) out.push(mkEvent(app, 'edit', id, b._l, chg, stampDate(app, b)));
+      }
+    });
+    Object.keys(prev).forEach(id => {
+      if(!now[id]) out.push(mkEvent(app, 'del', id, prev[id]._l, [], new Date()));
+    });
+  }
+  save(key, now);
+  return out;
+}
+function whoOf(sig){ return sig && sig.assignedTo ? sig.assignedTo : ''; }
+function stampDate(app, sig){
+  if(app.noStamp || app.dayOnly) return new Date();
+  const d = toDate(sig._s);
+  // A stale stamp on a row that just changed means the app does not restamp
+  // that field — fall back to detection time so the feed stays chronological.
+  if(!d || (Date.now() - d.getTime()) > 6*3600*1000) return new Date();
+  return d;
+}
+function mkEvent(app, type, id, label, changes, when, who, backfill){
+  return { app:app.key, type:type, id:id, label:String(label||''),
+           chg:changes || [], t:(when || new Date()).getTime(),
+           who:who || '', bf:!!backfill };
+}
+
+/* ══ ATTRIBUTION ══
+   Only Task Manager and Attendance record a real identity. For every other
+   app we attribute by the CEO's app→staff assignment, but ONLY while that
+   person is punched in — and we label it as an assignment, never as fact.  */
+function attribute(ev){
+  if(ev.who) return { name:ev.who, sure:true };
+  const a = assign[ev.app];
+  if(!a) return null;
+  const st = attend[a];
+  if(st && st.state === 'IN') return { name:a, sure:false };
+  return null;
+}
+
+/* ══ POLL ══
+   Each app is ingested the moment it answers rather than waiting for the
+   slowest one, so a cold-starting backend never holds up the whole screen. */
+/* Run `job` over every item, at most `n` in flight at a time. */
+function runPool(items, n, job){
+  let i = 0;
+  const worker = () => {
+    if(i >= items.length) return Promise.resolve();
+    const item = items[i++];
+    return Promise.resolve(job(item)).then(worker);
+  };
+  return Promise.all(Array.from({ length:Math.min(n, items.length) }, worker));
+}
+
+let renderPending = null;
+function scheduleRender(){
+  if(renderPending) return;
+  renderPending = setTimeout(() => { renderPending = null; renderAll(); }, 180);
+}
+function ingest(app, recs){
+  records[app.key] = recs;
+  const evs = diffApp(app, recs);
+  if(!evs.length) return 0;
+  const now = Date.now();
+  if(!firstRun) evs.forEach(e => e.fresh = now);
+  events = evs.concat(events).sort((x,y) => y.t - x.t).slice(0, 800);
+  save(LS.events, events.map(e => { const c = Object.assign({}, e); delete c.fresh; return c; }));
+  return evs.length;
+}
+async function pollAll(manual){
+  if(busy) return;
+  busy = true;
+  setLive('syncing', true);
+  let count = 0;
+  try{
+    const wasFirst = firstRun;
+    fetchAttendance().then(scheduleRender);
+    // Firing all seven at once made Apps Script throttle — backends that answer
+    // in 2s alone were timing out at 28s. A small pool keeps every app healthy.
+    await runPool(APPS, 3, app =>
+      fetchApp(app)
+        .then(recs => { if(recs !== null) count += ingest(app, recs); })
+        .catch(() => {})                       // already recorded in health
+        .then(scheduleRender)
+    );
+    if(wasFirst){ localStorage.setItem(LS.seen, '1'); firstRun = false; }
+    renderAll();
+    setLive('live', false);
+    if(manual) toast(count ? count + ' new change' + (count > 1 ? 's' : '') + ' picked up'
+                           : 'No changes since last check');
+  }catch(e){
+    setLive('error', false);
+  }finally{ busy = false; }
+}
+function setLive(state, spinning){
+  const pill = document.getElementById('livePill');
+  const dot  = document.getElementById('liveDot');
+  const txt  = document.getElementById('liveTxt');
+  if(state === 'syncing'){ txt.textContent = 'syncing…'; dot.classList.remove('live'); pill.classList.remove('on'); }
+  else if(state === 'live'){ txt.textContent = polling ? 'live' : 'paused';
+    dot.classList.toggle('live', polling); pill.classList.toggle('on', polling); }
+  else { txt.textContent = 'error'; dot.classList.remove('live'); pill.classList.remove('on'); }
+}
+function togglePoll(){
+  polling = !polling;
+  document.getElementById('pauseBtn').textContent = polling ? '⏸' : '▶';
+  if(polling){ pollTimer = setInterval(() => pollAll(), POLL_MS); pollAll(); }
+  else clearInterval(pollTimer);
+  setLive('live', false);
+}
+
+/* ══ RENDER ══ */
+function renderAll(){ renderStaff(); renderChips(); renderFeed(); renderToday(); renderCoach(); renderHealth(); renderBanner(); }
+
+function renderBanner(){
+  const down = APPS.filter(a => health[a.key] && !health[a.key].ok);
+  let h = '';
+  if(down.length){
+    h += '<div class="banner warn">⚠ <div><b>' + down.length + ' app' + (down.length>1?'s':'')
+      + ' not reachable:</b> ' + down.map(a => esc(a.name)).join(', ')
+      + '. Their activity is paused, not lost — the last snapshot is kept and diffing resumes when they come back.</div></div>';
+  }
+  const mk = health.market;
+  if(mk && mk.ok){
+    h += '<div class="banner info">ℹ <div><b>Marketplace timing:</b> the product feed does not return the sheet\'s '
+      + '<code>UPDATED_ON</code> column, so listing changes are timed from when this dashboard detects them '
+      + '(within ' + (POLL_MS/1000) + 's). Apply <code>marketplace-updatedOn.patch.gs</code> to the backend for exact times.</div></div>';
+  }
+  document.getElementById('topBanner').innerHTML = h;
+}
+
+function renderStaff(){
+  document.getElementById('staffGrid').innerHTML = STAFF.map(s => {
+    const st  = attend[s.name] || { state:'?', punches:[], since:null };
+    const on  = st.state === 'IN';
+    const my  = events.filter(e => { const at = attribute(e); return at && at.name === s.name; });
+    const tod = my.filter(e => isToday(new Date(e.t)));
+    const hr  = my.filter(e => Date.now() - e.t < 3600000);
+    const last= tod[0];
+    const mine= Object.keys(assign).filter(k => assign[k] === s.name);
+
+    let dur = '—';
+    if(on && st.since){
+      const mins = Math.max(0, Math.floor((Date.now() - st.since.getTime())/60000));
+      dur = (mins >= 60 ? Math.floor(mins/60) + 'h ' : '') + (mins % 60) + 'm';
+    }
+    let nowHtml;
+    if(last){
+      const app = appOf(last.app);
+      nowHtml = '<div class="nl-h">Working on now</div>'
+        + '<b style="color:' + app.colour + '">' + esc(app.short) + '</b> · '
+        + esc(trim(last.label, 74))
+        + '<div style="color:var(--text3);font-size:.71rem;margin-top:3px">'
+        + describe(last) + ' · ' + hhmm(new Date(last.t)) + ' (' + ago(new Date(last.t)) + ')</div>';
+    } else if(on){
+      nowHtml = '<div class="nl-h">Working on now</div><em>Punched in, but no recorded change yet today in '
+        + (mine.length ? mine.map(k => esc(appOf(k).short)).join(' / ') : 'any assigned app') + '.</em>';
+    } else {
+      nowHtml = '<div class="nl-h">Working on now</div><em>Not punched in.</em>';
+    }
+
+    return '<div class="staff-card' + (on ? ' duty' : '') + '">'
+      + '<div class="staff-top">'
+        + '<div class="avatar">' + s.initials + '</div>'
+        + '<div style="min-width:0"><div class="staff-name">' + esc(s.name) + '</div>'
+        + '<div class="staff-sub">' + (on ? 'On duty for ' + dur : (st.state === '?' ? 'Attendance unavailable' : 'Off duty')) + '</div></div>'
+        + '<span class="duty-tag' + (on ? ' on' : '') + '">' + (on ? '● ON DUTY' : (st.state === '?' ? '? UNKNOWN' : '○ OFF')) + '</span>'
+      + '</div>'
+      + '<div class="staff-stats">'
+        + '<div class="sstat"><b>' + hr.length  + '</b><span>last hour</span></div>'
+        + '<div class="sstat"><b>' + tod.length + '</b><span>today</span></div>'
+        + '<div class="sstat"><b>' + (st.punches ? st.punches.length : 0) + '</b><span>punches</span></div>'
+      + '</div>'
+      + '<div class="nowline">' + nowHtml + '</div>'
+      + (st.punches && st.punches.length
+          ? '<div class="punchstrip">' + st.punches.map(p =>
+              '<span class="punch ' + (p.type === 'IN' ? 'in' : 'out') + '">' + p.type + ' ' + esc(p.time) + '</span>').join('') + '</div>'
+          : '')
+      + '<div class="assign-row"><span>Assigned app</span>'
+        + '<select data-staff="' + esc(s.name) + '" onchange="setAssign(this.value, this.dataset.staff)">'
+        + '<option value=""' + (mine.length ? '' : ' selected') + '>— not assigned —</option>'
+        + APPS.map(a => '<option value="' + a.key + '"' + (mine[0] === a.key ? ' selected' : '') + '>'
+            + esc(a.name) + '</option>').join('')
+        + '</select></div>'
+      + '</div>';
+  }).join('');
+}
+function setAssign(appKey, staffName){
+  Object.keys(assign).forEach(k => { if(assign[k] === staffName) delete assign[k]; });
+  if(appKey) assign[appKey] = staffName;
+  save(LS.assign, assign);
+  renderStaff(); renderFeed();
+  toast(appKey ? staffName + ' → ' + appOf(appKey).name : staffName + ' unassigned');
+}
+
+function renderChips(){
+  document.getElementById('appChips').innerHTML = APPS.map(a => {
+    const n = events.filter(e => e.app === a.key).length;
+    return '<button class="chip' + (filter === a.key ? ' on' : '') + '" onclick="setFilter(\'' + a.key + '\')" '
+      + 'style="' + (filter === a.key ? 'background:' + a.colour + ';border-color:' + a.colour + ';color:#000' : 'border-left:3px solid ' + a.colour) + '">'
+      + esc(a.short) + ' ' + n + '</button>';
+  }).join(' ');
+  document.querySelector('.chip[data-f="all"]').classList.toggle('on', filter === 'all');
+}
+function setFilter(f){ filter = f; renderChips(); renderFeed(); }
+
+function describe(e){
+  const app = appOf(e.app);
+  if(e.type === 'add') return 'Added a new ' + rowWord(app);
+  if(e.type === 'del') return 'Removed a ' + rowWord(app);
+  if(e.bf)             return 'Worked on this ' + rowWord(app);
+  if(!e.chg.length)    return 'Updated';
+  const names = e.chg.map(c => c.f === '_title' ? 'title' : ((app.nice && app.nice[c.f]) || c.f));
+  return 'Changed ' + names.slice(0,3).join(', ') + (names.length > 3 ? ' +' + (names.length-3) + ' more' : '');
+}
+function rowWord(app){
+  return ({ stock:'stock row', dims:'dimensions entry', returns:'return', tracker:'package',
+            pickup:'dispatch', tasks:'task', market:'listing' })[app.key] || 'record';
+}
+function renderFeed(){
+  const q = (document.getElementById('feedSearch').value || '').toLowerCase().trim();
+  let list = events.filter(e => filter === 'all' || e.app === filter);
+  if(q){
+    list = list.filter(e => {
+      const at = attribute(e);
+      return e.label.toLowerCase().includes(q)
+        || appOf(e.app).name.toLowerCase().includes(q)
+        || (at && at.name.toLowerCase().includes(q))
+        || e.chg.some(c => String(c.to).toLowerCase().includes(q) || String(c.from).toLowerCase().includes(q));
+    });
+  }
+  document.getElementById('cntLive').textContent = list.length;
+  const box = document.getElementById('feed');
+  if(!list.length){
+    box.innerHTML = '<div class="empty"><span class="big">🔍</span>'
+      + (events.length ? 'No activity matches this filter.'
+        : 'No changes recorded yet.<br>This dashboard reports differences between polls — leave it open and staff edits will appear here within '
+          + (POLL_MS/1000) + ' seconds.') + '</div>';
+    return;
+  }
+  const now = Date.now();
+  box.innerHTML = list.slice(0, 300).map(e => {
+    const app = appOf(e.app);
+    const at  = attribute(e);
+    const d   = new Date(e.t);
+    const chg = e.chg.filter(c => c.f !== '_title').slice(0, 5).map(c =>
+      '<div class="chg"><b>' + esc((app.nice && app.nice[c.f]) || c.f) + ':</b> '
+      + (c.from ? '<span class="from">' + esc(trim(c.from, 60)) + '</span> → ' : '')
+      + '<span class="to">' + esc(trim(c.to, 60) || '(blank)') + '</span></div>').join('');
+    return '<div class="ev' + (e.fresh && now - e.fresh < 3000 ? ' fresh' : '') + '">'
+      + '<div class="ev-time" title="' + esc(d.toLocaleString(IST)) + '">' + hhmmss(d) + '</div>'
+      + '<div class="ev-body">'
+        + '<div class="ev-head">'
+          + '<span class="appchip" style="background:' + app.colour + '22;color:' + app.colour + ';border:1px solid ' + app.colour + '55">' + esc(app.short) + '</span>'
+          + '<span class="actchip act-' + e.type + '">' + (e.type === 'add' ? 'new' : e.type === 'del' ? 'removed' : 'edited') + '</span>'
+          + (at ? '<span class="whochip' + (at.sure ? '' : ' guess') + '" title="'
+                  + (at.sure ? 'Recorded by the app' : 'Attributed from your app assignment while punched in — not recorded by the app')
+                  + '">' + (at.sure ? '👤 ' : '≈ ') + esc(at.name) + '</span>' : '')
+        + '</div>'
+        + '<div class="ev-label">' + esc(trim(e.label, 130)) + '</div>'
+        + '<div style="font-size:.72rem;color:var(--text3);margin-top:2px">' + esc(describe(e)) + '</div>'
+        + (chg ? '<div class="ev-changes">' + chg + '</div>' : '')
+      + '</div></div>';
+  }).join('');
+}
+
+function renderToday(){
+  const tod = events.filter(e => isToday(new Date(e.t)));
+  const adds = tod.filter(e => e.type === 'add').length;
+  const eds  = tod.filter(e => e.type === 'edit').length;
+  const onDuty = STAFF.filter(s => (attend[s.name]||{}).state === 'IN').length;
+  document.getElementById('kpis').innerHTML =
+      kpi(tod.length, 'changes today') + kpi(adds, 'new records') + kpi(eds, 'edits')
+    + kpi(onDuty + '/' + STAFF.length, 'staff on duty')
+    + kpi(APPS.filter(a => health[a.key] && health[a.key].ok).length + '/' + APPS.length, 'apps online');
+
+  const byApp = APPS.map(a => ({ a:a, n:tod.filter(e => e.app === a.key).length }))
+                    .sort((x,y) => y.n - x.n);
+  const max = Math.max(1, byApp[0] ? byApp[0].n : 1);
+  let h = '<div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:11px">Changes today by app</div>';
+  h += byApp.map(x => '<div class="bar-row"><div class="bar-lb">' + esc(x.a.short) + '</div>'
+      + '<div class="bar-tr"><div class="bar-fl" style="width:' + (x.n/max*100) + '%;background:' + x.a.colour + '"></div></div>'
+      + '<div class="bar-vl">' + x.n + '</div></div>').join('');
+
+  const byStaff = STAFF.map(s => ({ s:s, n:tod.filter(e => { const at = attribute(e); return at && at.name === s.name; }).length }));
+  const un = tod.filter(e => !attribute(e)).length;
+  const smax = Math.max(1, Math.max.apply(null, byStaff.map(x => x.n).concat([un])));
+  h += '<div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:18px 0 11px">Changes today by staff</div>';
+  h += byStaff.map(x => '<div class="bar-row"><div class="bar-lb">' + esc(x.s.name) + '</div>'
+      + '<div class="bar-tr"><div class="bar-fl" style="width:' + (x.n/smax*100) + '%;background:#22c55e"></div></div>'
+      + '<div class="bar-vl">' + x.n + '</div></div>').join('');
+  h += '<div class="bar-row"><div class="bar-lb" style="color:var(--text3)">unattributed</div>'
+      + '<div class="bar-tr"><div class="bar-fl" style="width:' + (un/smax*100) + '%;background:#555"></div></div>'
+      + '<div class="bar-vl">' + un + '</div></div>';
+
+  const hours = new Array(24).fill(0);
+  tod.forEach(e => hours[new Date(e.t).getHours()]++);
+  const hmax = Math.max(1, Math.max.apply(null, hours));
+  h += '<div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:18px 0 6px">Activity by hour</div>';
+  h += '<div class="hourgrid">' + hours.map((n,i) =>
+        '<div class="hourbar" style="height:' + (n/hmax*100) + '%;' + (n ? '' : 'opacity:.15') + '" title="' + i + ':00 — ' + n + ' changes"></div>').join('') + '</div>';
+  h += '<div class="hourlbl">' + hours.map((n,i) => '<span>' + (i % 3 === 0 ? i : '') + '</span>').join('') + '</div>';
+  document.getElementById('todayBars').innerHTML = h;
+}
+function kpi(v, l){ return '<div class="kpi"><b>' + v + '</b><span>' + l + '</span></div>'; }
+
+/* ══ COACHING — data-quality gaps worth training staff on ══ */
+const COACH_RULES = [
+  { app:'stock', id:'stock-nohsn', sev:'hi', title:'Stock rows with no HSN code',
+    test:r => !String(r.hsn||'').trim(),
+    why:'HSN is mandatory on every GST invoice. A blank HSN here means the invoice and the GSTR report have to be fixed by hand later.',
+    say:'When you add or edit a stock item, always fill the HSN column. If you do not know the code, copy it from the same product on the marketplace listing rather than leaving it empty.' },
+  { app:'stock', id:'stock-nogst', sev:'hi', title:'Stock rows with no GST %',
+    test:r => !String(r.gst||'').trim(),
+    why:'Without the GST rate the value and tax analysis in the Stock Report cannot be computed for these SKUs.',
+    say:'Please set the GST % on every stock row — it takes a second and it is what makes the stock valuation report work.' },
+  { app:'stock', id:'stock-nocat', sev:'lo', title:'Stock rows with no category',
+    test:r => !String(r.category||'').trim(),
+    why:'Category drives the grouping in the Stock & Inventory Analysis; uncategorised rows fall into a catch-all bucket.',
+    say:'Set a category when you create a stock row so the reports group it correctly.' },
+  { app:'stock', id:'stock-allblank', sev:'hi', title:'Stock rows with no quantity at all',
+    test:r => !String(r.packed||'').trim() && !String(r.loose||'').trim() && !String(r.damage||'').trim(),
+    why:'A row with blank packed, loose and damage is indistinguishable from a product that was never counted.',
+    say:'If a product is genuinely zero, type 0 rather than leaving the cell blank — blank means "not counted yet" and it blocks the reorder report.' },
+  { app:'dims', id:'dims-nocarton', sev:'md', title:'Dimensions entries with no carton weight',
+    test:r => !String(r.cartonWeight||'').trim(),
+    why:'Courier slabs are charged on the packed weight; without carton weight the shipping cost estimate is wrong.',
+    say:'Always weigh the item inside its carton and record the carton weight — that is the number the courier bills on.' },
+  { app:'dims', id:'dims-nopack', sev:'md', title:'Dimensions entries missing pack L/W/H',
+    test:r => !String(r.kLength||'').trim() || !String(r.kWidth||'').trim() || !String(r.kHeight||'').trim(),
+    why:'Volumetric weight needs all three pack dimensions; a missing one silently under-estimates the courier charge.',
+    say:'Record all three pack dimensions (L, W and H). Leaving one blank makes the volumetric weight calculation useless.' },
+  { app:'returns', id:'ret-nocond', sev:'md', title:'Returns with no condition recorded',
+    test:r => !String(r.condition||'').trim(),
+    why:'Condition decides whether the unit goes back into sellable stock or into damage — a blank leaves the stock count wrong.',
+    say:'Every return needs its condition set (Good / Damaged) at the moment you open the parcel, not later.' },
+  { app:'returns', id:'ret-noorder', sev:'hi', title:'Returns with no order ID',
+    test:r => !String(r.orderId||'').trim(),
+    why:'Without the order ID the return cannot be matched to the platform claim, so the refund cannot be recovered.',
+    say:'Never log a return without its order ID — that is the only way we can claim the refund back from the platform.' },
+  { app:'tracker', id:'trk-noawb', sev:'md', title:'Packages with no AWB / tracking number',
+    test:r => !String(r.awb||'').trim(),
+    why:'No AWB means the package cannot be auto-tracked and its delivery status will never update.',
+    say:'Check that the AWB was captured after scanning. On Amazon Easy Ship labels the scan often misses it — type it in manually when that happens.' },
+  { app:'market', id:'mkt-nostock', sev:'hi', title:'Live listings showing zero stock',
+    test:r => String(r.stock||'').trim() !== '' && Number(r.stock) === 0,
+    why:'A live listing at zero stock still takes search placement but cannot convert, and repeated stock-outs hurt the account health.',
+    say:'If a listing is out of stock, either refill it from the Stock app or pause the listing — do not leave it live at zero.' },
+  { app:'market', id:'mkt-noimg', sev:'hi', title:'Listings with no main image',
+    test:r => !String(r.img||'').trim(),
+    why:'A listing with no main image will not render a card on the storefront.',
+    say:'Every listing needs at least one photo. Upload the main image before submitting the listing.' },
+  { app:'market', id:'mkt-thinbullets', sev:'md', title:'Listings with thin or missing bullets',
+    test:r => String(r.bullets||'').trim().length < 80,
+    why:'Bullets carry most of the keyword weight; a thin bullet block ranks poorly and reads as low quality.',
+    say:'Use the ✨ AI Generate button on the listing form — it writes the five bullets for you. Do not submit a listing with one-line bullets.' },
+  { app:'market', id:'mkt-nodims', sev:'md', title:'Listings with no package dimensions',
+    test:r => !String(r.packageDimensions||'').trim(),
+    why:'Package dimensions feed the shipping-cost and pricing calculators.',
+    say:'Fill the ⑧ Package Dimensions section — the pricing calculator cannot work out the courier slab without it.' },
+  { app:'tasks', id:'task-stale', sev:'md', title:'Tasks past their target date and still open',
+    test:r => { const t = toDate(r.targetDate);
+      return t && t < new Date(new Date().toDateString()) && String(r.status||'') !== 'Completed'; },
+    why:'An overdue open task usually means the staff member is blocked and has not said so.',
+    say:'If you cannot finish a task by its target date, update the progress and write a note explaining what is blocking you — do not let it sit silently.' }
+];
+function renderCoach(){
+  const found = [];
+  COACH_RULES.forEach(rule => {
+    const recs = records[rule.app];
+    if(!recs || !recs.length) return;
+    const hits = recs.filter(r => { try{ return rule.test(r); }catch(e){ return false; } });
+    if(hits.length) found.push({ rule:rule, hits:hits, app:appOf(rule.app) });
+  });
+  found.sort((a,b) => (({hi:0,md:1,lo:2})[a.rule.sev] - ({hi:0,md:1,lo:2})[b.rule.sev]) || (b.hits.length - a.hits.length));
+  document.getElementById('cntCoach').textContent = found.length;
+
+  const box = document.getElementById('coachList');
+  if(!found.length){
+    box.innerHTML = '<div class="empty"><span class="big">✅</span>No data-quality gaps found in the loaded records.<br>Nothing to coach on right now.</div>';
+    return;
+  }
+  box.innerHTML = found.map(f => {
+    const pct = Math.round(f.hits.length / (records[f.rule.app].length || 1) * 100);
+    const who = assign[f.rule.app];
+    return '<div class="coach sev-' + f.rule.sev + '">'
+      + '<div class="coach-h">'
+        + '<span class="appchip" style="background:' + f.app.colour + '22;color:' + f.app.colour + ';border:1px solid ' + f.app.colour + '55">' + esc(f.app.short) + '</span>'
+        + '<span class="coach-t">' + esc(f.rule.title) + '</span>'
+        + '<span class="coach-n">' + f.hits.length + ' of ' + records[f.rule.app].length + ' · ' + pct + '%</span>'
+        + (who ? '<span class="whochip">≈ ' + esc(who) + '</span>' : '')
+      + '</div>'
+      + '<div class="coach-d">' + esc(f.rule.why) + '</div>'
+      + '<div class="coach-say"><b>Say this to your staff</b>' + esc(f.rule.say) + '</div>'
+      + '<div class="coach-eg">e.g. ' + f.hits.slice(0,3).map(h => esc(trim(h._label, 58))).join(' · ')
+        + (f.hits.length > 3 ? ' … +' + (f.hits.length - 3) + ' more' : '') + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function renderHealth(){
+  document.getElementById('healthGrid').innerHTML = APPS.map(a => {
+    const h = health[a.key] || {};
+    const last = events.filter(e => e.app === a.key)[0];
+    const lastD = last ? new Date(last.t) : null;
+    const quiet = lastD ? Math.floor((Date.now() - lastD.getTime())/60000) : null;
+    const st = !h.ok ? ['hs-bad','OFFLINE'] : (quiet !== null && quiet < 60 ? ['hs-ok','ACTIVE'] : ['hs-wait','QUIET']);
+    return '<div class="hcard">'
+      + '<div class="hcard-top">'
+        + '<span style="width:9px;height:9px;border-radius:50%;background:' + a.colour + ';flex-shrink:0"></span>'
+        + '<span class="hname">' + esc(a.name) + '</span>'
+        + '<span class="hstat ' + st[0] + '">' + st[1] + '</span>'
+      + '</div>'
+      + '<div class="hrow"><span>Records</span><b>' + (h.count != null ? h.count : '—') + '</b></div>'
+      + '<div class="hrow"><span>Response</span><b>' + (h.ms ? h.ms + ' ms' : '—') + '</b></div>'
+      + '<div class="hrow"><span>Changes seen</span><b>' + events.filter(e => e.app === a.key).length + '</b></div>'
+      + '<div class="hrow"><span>Last change</span><b>' + (lastD ? ago(lastD) : 'none yet') + '</b></div>'
+      + (h.err ? '<div class="hnote" style="color:var(--bad)">' + esc(h.err) + '</div>' : '')
+      + '<div class="hnote">' + (a.noStamp
+          ? 'Change-detection only — this feed returns no per-row timestamp.'
+          : a.dayOnly ? 'Date-only feed — times are when this dashboard saw the change.'
+          : 'Per-row timestamps available.')
+        + ' <a class="hlink" href="' + a.site + '" target="_blank" rel="noopener">open app ↗</a></div>'
+      + '</div>';
+  }).join('');
+}
+
+/* ══ UI ══ */
+function showPane(p){
+  document.querySelectorAll('.pane').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  document.getElementById('pane-' + p).classList.add('active');
+  document.querySelector('.tab[data-pane="' + p + '"]').classList.add('active');
+}
+function toggleTheme(){
+  const t = document.body.dataset.theme === 'light' ? 'dark' : 'light';
+  document.body.dataset.theme = t; save(LS.theme, t);
+}
+function tickClock(){
+  document.getElementById('clock').textContent =
+    new Date().toLocaleTimeString(IST, { hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true });
+}
+
+/* ══ BOOT ══ */
+function boot(){
+  document.getElementById('verBadge').textContent = window.IBI_VERSION;
+  document.getElementById('verBadge').title =
+    window.IBI_VERSION + ' — ' + window.IBI_VERSION_DATE + '\n' + window.IBI_VERSION_NOTE;
+  document.getElementById('footVer').textContent = window.IBI_VERSION + ' · ' + window.IBI_VERSION_DATE;
+  document.body.dataset.theme = load(LS.theme, 'dark');
+  tickClock(); setInterval(tickClock, 1000);
+  renderAll();
+  pollAll();
+  pollTimer = setInterval(() => pollAll(), POLL_MS);
+  setInterval(() => { renderStaff(); renderHealth(); }, 30000);   // keep "ago" labels honest
+}
+if(sessionStorage.getItem('ibi_sup_ok') === '1'){
+  document.getElementById('gate').style.display = 'none';
+  boot();
+} else {
+  setTimeout(() => document.getElementById('gatePin').focus(), 250);
+}
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "IBI Staff Supervision",
+  "short_name": "IBI Supervision",
+  "description": "Live top-management supervision of every IBI web app — see what each staff member is doing right now, coach them, and track daily output.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "lang": "en-IN",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 184 184'><rect width='184' height='184' rx='30' fill='%23000'/><g fill='%2300c5ff'><circle cx='24' cy='24' r='4.5'/><circle cx='58' cy='24' r='7.5'/><circle cx='92' cy='24' r='10.5'/><circle cx='126' cy='24' r='13.5'/><circle cx='160' cy='24' r='16.5'/><circle cx='24' cy='58' r='4.5'/><circle cx='58' cy='58' r='7.5'/><circle cx='92' cy='58' r='10.5'/><circle cx='126' cy='58' r='13.5'/><circle cx='160' cy='58' r='16.5'/><circle cx='24' cy='92' r='4.5'/><circle cx='58' cy='92' r='7.5'/><circle cx='92' cy='92' r='10.5'/><circle cx='126' cy='92' r='13.5'/><circle cx='160' cy='92' r='16.5'/><circle cx='24' cy='126' r='4.5'/><circle cx='58' cy='126' r='7.5'/><circle cx='92' cy='126' r='10.5'/><circle cx='126' cy='126' r='13.5'/><circle cx='160' cy='126' r='16.5'/><circle cx='24' cy='160' r='4.5'/><circle cx='58' cy='160' r='7.5'/><circle cx='92' cy='160' r='10.5'/><circle cx='126' cy='160' r='13.5'/><circle cx='160' cy='160' r='16.5'/></g></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
