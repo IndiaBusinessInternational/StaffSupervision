@@ -463,16 +463,18 @@ const APPS = [
     method:'GET', params:{action:'getApprovedProducts'},
     pick:d => d.products || [],
     id:r => r.productId, label:r => r.title,
-    /* getApprovedProducts does not return the sheet's UPDATED_ON column yet,
-       so this app is change-detection only until the backend patch is applied. */
+    /* getApprovedProducts returns UPDATED_ON since the _stampStr_ backend patch
+       (5 Aug 2026), so listing edits carry their real time. Rows never touched
+       since that column existed still come back blank — stampDate() falls back
+       to detection time for those, which is why there is no noStamp flag here
+       any more; emptiness is detected per-record instead of assumed per-app. */
     stamp:r => r.updatedOn || '',
     watch:['title','price','mrp','stock','img','additionalImgs','variations','category','brand',
            'description','bullets','productDimensions','packageDimensions','minQty','maxQty'],
     nice:{title:'Title',price:'Price ₹',mrp:'MRP ₹',stock:'Stock',img:'Main image',
           additionalImgs:'Extra images',variations:'Variations',category:'Category',brand:'Brand',
           description:'Description',bullets:'Bullets',productDimensions:'Product dims',
-          packageDimensions:'Package dims',minQty:'Min qty',maxQty:'Max qty'},
-    noStamp:true
+          packageDimensions:'Package dims',minQty:'Min qty',maxQty:'Max qty'}
   },
   {
     key:'finance', name:'Finance Tracker', short:'Finance', colour:'#22d3ee',
@@ -957,11 +959,17 @@ function renderBanner(){
     h += '<div class="banner warn">🗄 <div><b>Backend unreachable</b> — ' + esc(backendState.err)
       + '. Falling back to in-browser detection only.</div></div>';
   }
-  const mk = health.market;
-  if(mk && mk.ok){
-    h += '<div class="banner info">ℹ <div><b>Marketplace timing:</b> the product feed does not return the sheet\'s '
-      + '<code>UPDATED_ON</code> column, so listing changes are timed from when this dashboard detects them '
-      + '(within ' + (POLL_MS/1000) + 's). Apply <code>marketplace-updatedOn.patch.gs</code> to the backend for exact times.</div></div>';
+  /* Detect the missing-timestamp condition rather than hard-coding it, so this
+     warning disappears by itself once a backend starts returning stamps. */
+  const noStampApps = APPS.filter(a => health[a.key] && health[a.key].ok && !a.dayOnly
+                        && (records[a.key] || []).length
+                        && !(records[a.key] || []).some(r => r._stamp));
+  if(noStampApps.length){
+    h += '<div class="banner info">ℹ <div><b>Timing is approximate for '
+      + noStampApps.map(a => esc(a.short)).join(', ') + ':</b> '
+      + (noStampApps.length > 1 ? 'those feeds return' : 'that feed returns')
+      + ' no per-row timestamp, so changes are timed from when this dashboard detects them (within '
+      + (POLL_MS/1000) + 's).</div></div>';
   }
   document.getElementById('topBanner').innerHTML = h;
 }
@@ -1283,10 +1291,12 @@ function renderHealth(){
       + '<div class="hrow"><span>Changes seen</span><b>' + events.filter(e => e.app === a.key).length + '</b></div>'
       + '<div class="hrow"><span>Last change</span><b>' + (lastD ? ago(lastD) : 'none yet') + '</b></div>'
       + (h.err ? '<div class="hnote" style="color:var(--bad)">' + esc(h.err) + '</div>' : '')
-      + '<div class="hnote">' + (a.noStamp
-          ? 'Change-detection only — this feed returns no per-row timestamp.'
-          : a.dayOnly ? 'Date-only feed — times are when this dashboard saw the change.'
-          : 'Per-row timestamps available.')
+      + '<div class="hnote">' + (a.dayOnly
+          ? 'Date-only feed — times are when this dashboard saw the change.'
+          : (records[a.key] || []).some(r => r._stamp)
+            ? 'Per-row timestamps available.'
+            : 'No per-row timestamp — changes are timed at detection.')
+        + (a.everyNth ? ' Polled every ' + a.everyNth + ' cycles.' : '')
         + ' <a class="hlink" href="' + a.site + '" target="_blank" rel="noopener">open app ↗</a></div>'
       + '</div>';
   }).join('');
