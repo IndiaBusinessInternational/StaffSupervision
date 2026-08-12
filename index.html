@@ -76,6 +76,11 @@ body{color-scheme:dark} body[data-theme="light"]{color-scheme:light}
 .gate-card p{color:var(--text2);font-size:.85rem;line-height:1.6;margin-bottom:22px}
 .gate-card input{width:100%;padding:13px 15px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-size:1.15rem;text-align:center;letter-spacing:5px;font-family:var(--mono)}
 .gate-card input:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px var(--cyan-dim)}
+/* The username is a name, not a secret — read it as text, not as a PIN. */
+.gate-card input[name="username"]{text-align:left;letter-spacing:.4px;font-size:.95rem;font-family:var(--font)}
+.gate-card label{display:block;text-align:left;margin:0 0 5px;font-size:.7rem;letter-spacing:.6px;
+  text-transform:uppercase;color:var(--text3);font-weight:700}
+.gate-card label[for="gatePin"]{margin-top:12px}
 .gate-card button{width:100%;margin-top:14px;padding:13px;background:var(--cyan);color:#001018;border:none;border-radius:var(--radius);font-weight:700;font-size:.95rem;cursor:pointer;letter-spacing:.6px}
 .gate-card button:hover{background:var(--cyan-dark)}
 .gate-card button:disabled{opacity:.5;cursor:not-allowed}
@@ -238,8 +243,21 @@ footer b{color:var(--cyan)}
     <svg viewBox="0 0 184 184" width="52" height="52"><rect width="184" height="184" rx="30" fill="#000"/><g fill="#00c5ff"><circle cx="24" cy="24" r="4.5"/><circle cx="58" cy="24" r="7.5"/><circle cx="92" cy="24" r="10.5"/><circle cx="126" cy="24" r="13.5"/><circle cx="160" cy="24" r="16.5"/><circle cx="24" cy="58" r="4.5"/><circle cx="58" cy="58" r="7.5"/><circle cx="92" cy="58" r="10.5"/><circle cx="126" cy="58" r="13.5"/><circle cx="160" cy="58" r="16.5"/><circle cx="24" cy="92" r="4.5"/><circle cx="58" cy="92" r="7.5"/><circle cx="92" cy="92" r="10.5"/><circle cx="126" cy="92" r="13.5"/><circle cx="160" cy="92" r="16.5"/><circle cx="24" cy="126" r="4.5"/><circle cx="58" cy="126" r="7.5"/><circle cx="92" cy="126" r="10.5"/><circle cx="126" cy="126" r="13.5"/><circle cx="160" cy="126" r="16.5"/><circle cx="24" cy="160" r="4.5"/><circle cx="58" cy="160" r="7.5"/><circle cx="92" cy="160" r="10.5"/><circle cx="126" cy="160" r="13.5"/><circle cx="160" cy="160" r="16.5"/></g></svg>
     <h1>Staff Supervision</h1>
     <p>Top-management access only.<br>Enter the CEO password to continue.</p>
-    <input type="password" id="gatePin" inputmode="numeric" autocomplete="off" placeholder="••••" maxlength="24">
-    <button id="gateBtn" onclick="tryUnlock()">Unlock</button>
+    <!-- A REAL username field, pre-filled with this app's own name. Without one the
+         browser's password manager has nothing to key on and reuses whatever username
+         it already knows for the account (iINTELLIGENCEi), so every IBI app collapses
+         into one saved entry. Nothing checks this value — only the password is sent to
+         the server. The password must NOT say autocomplete="off": that is precisely the
+         instruction not to offer to save it. -->
+    <form id="gateForm" onsubmit="event.preventDefault();tryUnlock();">
+      <label for="gateUser">Username</label>
+      <input type="text" id="gateUser" name="username" value="IBI-Supervision"
+             autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <label for="gatePin">CEO password</label>
+      <input type="password" id="gatePin" name="password" inputmode="numeric"
+             autocomplete="current-password" placeholder="••••" maxlength="24">
+      <button id="gateBtn" type="submit">Unlock</button>
+    </form>
     <div id="gateMsg"></div>
     <div class="gate-note">The password is verified on the server and is never stored in this page. India Business International — internal use only.</div>
   </div>
@@ -251,7 +269,7 @@ footer b{color:var(--cyan)}
     <div class="brand">
       <svg viewBox="0 0 184 184"><rect width="184" height="184" rx="30" fill="#000"/><g fill="#00c5ff"><circle cx="24" cy="24" r="4.5"/><circle cx="58" cy="24" r="7.5"/><circle cx="92" cy="24" r="10.5"/><circle cx="126" cy="24" r="13.5"/><circle cx="160" cy="24" r="16.5"/><circle cx="24" cy="58" r="4.5"/><circle cx="58" cy="58" r="7.5"/><circle cx="92" cy="58" r="10.5"/><circle cx="126" cy="58" r="13.5"/><circle cx="160" cy="58" r="16.5"/><circle cx="24" cy="92" r="4.5"/><circle cx="58" cy="92" r="7.5"/><circle cx="92" cy="92" r="10.5"/><circle cx="126" cy="92" r="13.5"/><circle cx="160" cy="92" r="16.5"/><circle cx="24" cy="126" r="4.5"/><circle cx="58" cy="126" r="7.5"/><circle cx="92" cy="126" r="10.5"/><circle cx="126" cy="126" r="13.5"/><circle cx="160" cy="126" r="16.5"/><circle cx="24" cy="160" r="4.5"/><circle cx="58" cy="160" r="7.5"/><circle cx="92" cy="160" r="10.5"/><circle cx="126" cy="160" r="13.5"/><circle cx="160" cy="160" r="16.5"/></g></svg>
       <span class="brand-txt">IBI Supervision</span>
-      <span class="ver-badge" id="verBadge" title="">v1.0</span>
+      <span class="ver-badge" id="verBadge" title="">v1.1</span>
     </div>
     <div class="tb-spacer"></div>
     <div class="livepill" id="livePill"><span class="dot" id="liveDot"></span><span id="liveTxt">idle</span></div>
@@ -305,7 +323,7 @@ footer b{color:var(--cyan)}
   </div>
 
   <footer>
-    <b>IBI Staff Supervision</b> — India Business International · <span id="footVer">v1.0</span><br>
+    <b>IBI Staff Supervision</b> — India Business International · <span id="footVer">v1.1</span><br>
     Read-only management view. This tool never writes to any staff app.
   </footer>
 </div>
@@ -316,7 +334,7 @@ footer b{color:var(--cyan)}
 /* ══════════════════════════════════════════════════════════════════════
    IBI STAFF SUPERVISION — live cross-app staff activity monitor
    ══════════════════════════════════════════════════════════════════════ */
-window.IBI_VERSION = 'v1.0';
+window.IBI_VERSION = 'v1.1';
 window.IBI_VERSION_DATE = '5 Aug 2026';
 window.IBI_VERSION_NOTE = 'First release — live activity feed across 7 staff web apps, '
   + 'attendance-aware staff cards, coaching finder and app-health grid.';
@@ -610,7 +628,8 @@ function tryUnlock(){
       : 'Incorrect password.');
   })();
 }
-document.getElementById('gatePin').addEventListener('keydown', e => { if(e.key === 'Enter') tryUnlock(); });
+/* Enter is handled by the form's submit — a keydown listener here as well would
+   run tryUnlock() twice, firing two verify requests per press. */
 
 /* ══ FETCH ══
    Apps Script cold-starts can take 30s+ (Pickup Manager measured at 36s cold,
