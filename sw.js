@@ -2,12 +2,16 @@
    Network-first for everything: this is a live monitoring tool, so a stale
    cached shell must never win over a fresh one. The cache only exists so the
    app still opens (and shows its last snapshot) when the network is down.  */
-const CACHE = 'ibi-supervision-v1-0';
+const CACHE = 'ibi-supervision-v1-1';
 const SHELL = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
   self.skipWaiting();
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).catch(() => {}));
+  /* cache:'reload' bypasses the HTTP cache — a plain addAll() goes through it, so a
+     version bump can silently precache the PREVIOUS build under the new name. */
+  e.waitUntil(caches.open(CACHE)
+    .then(c => c.addAll(SHELL.map(u => new Request(u, { cache: 'reload' }))))
+    .catch(() => {}));
 });
 
 self.addEventListener('activate', e => {
