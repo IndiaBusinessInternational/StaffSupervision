@@ -334,9 +334,17 @@ footer b{color:var(--cyan)}
 /* ══════════════════════════════════════════════════════════════════════
    IBI STAFF SUPERVISION — live cross-app staff activity monitor
    ══════════════════════════════════════════════════════════════════════ */
-window.IBI_VERSION = 'v1.1';
-window.IBI_VERSION_DATE = '5 Aug 2026';
-window.IBI_VERSION_NOTE = 'First release — live activity feed across 7 staff web apps, '
+window.IBI_VERSION = 'v2.0';
+window.IBI_VERSION_DATE = '13 Aug 2026';
+window.IBI_VERSION_NOTE = 'Runs only while you are watching. The backend (v1.4) used to '
+  + 'ingest every 5 minutes round the clock, which alone spent about five times this '
+  + 'Google account’s entire daily script allowance and was the reason other IBI apps '
+  + 'answered slowly or not at all. It now ingests at full speed only while this dashboard '
+  + 'is open, idling to a 2-hourly sweep otherwise — and opening the page (or returning '
+  + 'to the tab) asks the server for a fresh ingest straight away, so what you see is '
+  + 'current. Nothing is ever lost while it idles: changes are found by comparing against '
+  + 'a saved snapshot, so a quiet spell is caught in full on the next run.'
+  + '\n\nv1.1 — First release: live activity feed across 7 staff web apps, '
   + 'attendance-aware staff cards, coaching finder and app-health grid.';
 
 const GAS = id => 'https://script.google.com/macros/s/' + id + '/exec';
@@ -1337,6 +1345,27 @@ function tickClock(){
     new Date().toLocaleTimeString(IST, { hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true });
 }
 
+/* ══ REFRESH-ON-OPEN ══════════════════════════════════════════════════════
+   Backend v1.4 only ingests at full cadence while this dashboard is open, and
+   idles to a 2-hourly sweep otherwise. So opening the page must itself ask for
+   a fresh ingest — without this you would look at up to 2-hour-old activity and
+   wait for the next 5-minute tick.
+
+   Fire-and-forget on purpose: a full ingest takes ~50 s server-side and the
+   normal 45 s poll picks the result up. Rate-limited per browser so flipping
+   between tabs cannot queue up expensive runs; the 5-minute trigger already
+   covers you while the page stays open. */
+const KICK_MIN_GAP_MS = 4 * 60 * 1000;
+function kickIngest(){
+  if(!SUP_BACKEND) return;
+  const last = Number(load('ibi_sup_lastkick', 0)) || 0;   // load()/save() are JSON-backed
+  if(Date.now() - last < KICK_MIN_GAP_MS) return;
+  save('ibi_sup_lastkick', Date.now());
+  // No await, no error surfaced: a failed kick just means the next scheduled
+  // run does the work, which is what happened before this existed.
+  fetch(SUP_BACKEND + '?action=runNow', { cache:'no-store' }).catch(() => {});
+}
+
 /* ══ BOOT ══ */
 function boot(){
   document.getElementById('verBadge').textContent = window.IBI_VERSION;
@@ -1347,8 +1376,14 @@ function boot(){
   tickClock(); setInterval(tickClock, 1000);
   renderAll();
   pollAll();
+  kickIngest();                       // opening the page asks the server to ingest now
   pollTimer = setInterval(() => pollAll(), POLL_MS);
   setInterval(() => { renderStaff(); renderHealth(); }, 30000);   // keep "ago" labels honest
+  // Coming back to a tab that was left open counts as opening it again — the
+  // backend's watch stamp will have expired while it was hidden.
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible'){ kickIngest(); pollAll(); }
+  });
 }
 if(sessionStorage.getItem('ibi_sup_ok') === '1'){
   document.getElementById('gate').style.display = 'none';
