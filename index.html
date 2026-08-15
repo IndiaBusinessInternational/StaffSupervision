@@ -129,11 +129,60 @@ body{color-scheme:dark} body[data-theme="light"]{color-scheme:light}
 .nowline .nl-h{font-size:.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px}
 .nowline em{color:var(--text3);font-style:normal}
 .assign-row{margin-top:11px;display:flex;align-items:center;gap:8px;font-size:.72rem;color:var(--text3)}
-.assign-row select{flex:1;background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:7px;padding:6px 8px;font-size:.75rem;font-family:var(--font)}
-.assign-row select:focus{outline:none;border-color:var(--cyan)}
+.assign-now{flex:1;display:flex;flex-wrap:wrap;gap:4px;min-width:0}
+.atag{font-size:.65rem;font-weight:600;padding:2px 7px;border-radius:5px;background:var(--bg3);
+  border:1px solid var(--border2);white-space:nowrap}
+.atag.none{color:var(--text3);font-weight:400}
+.assign-edit{background:var(--bg3);border:1px solid var(--border2);color:var(--text3);border-radius:7px;
+  padding:3px 9px;font-size:.75rem;cursor:pointer;flex-shrink:0}
+.assign-edit:hover{border-color:var(--cyan);color:var(--cyan)}
+.appsel{margin-top:8px;padding:9px;background:var(--bg3);border:1px solid var(--border);border-radius:9px;
+  display:flex;flex-wrap:wrap;gap:5px}
+.appsel[hidden]{display:none}
+.apick{font-size:.68rem;padding:4px 9px;border-radius:6px;background:var(--bg2);border:1px solid var(--border2);
+  color:var(--text2);cursor:pointer;font-family:var(--font);white-space:nowrap}
+.apick:hover{border-color:var(--cyan)}
+.apick.on{font-weight:700;background:var(--bg4)}
+.apick i{font-style:normal;font-size:.58rem;color:var(--text3);margin-left:5px;font-family:var(--mono)}
+.appsel-note{flex-basis:100%;font-size:.65rem;color:var(--text3);line-height:1.5;margin-top:3px}
+.appsel-note em{font-style:italic}
 .punchstrip{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
 .punch{font-family:var(--mono);font-size:.63rem;padding:2px 7px;border-radius:5px;background:var(--bg3);border:1px solid var(--border)}
 .punch.in{color:var(--ok);border-color:var(--ok-bd)} .punch.out{color:var(--warn);border-color:var(--warn-bd)}
+/* Laptop chip — dashed while nothing is recorded, solid once it is. */
+.dev-chip{font-family:var(--mono);font-size:.63rem;padding:3px 8px;border-radius:5px;background:var(--bg3);
+  border:1px dashed var(--border2);color:var(--text3);cursor:pointer;text-align:left}
+.dev-chip:hover{border-color:var(--cyan);color:var(--cyan)}
+.dev-chip.part{border-style:solid;color:var(--text2)}
+.dev-chip.on{border-style:solid;background:var(--cyan-dim);color:var(--cyan);border-color:var(--cyan-dark)}
+
+/* ══ MODAL ══ */
+.modal{position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.74);display:flex;align-items:center;
+  justify-content:center;padding:18px}
+.modal[hidden]{display:none}
+.modal-card{width:100%;max-width:440px;max-height:92vh;overflow:auto;background:var(--bg2);
+  border:1px solid var(--border);border-top:3px solid var(--cyan);border-radius:var(--radius-xl);padding:22px}
+.modal-card h2{font-family:var(--cond);text-transform:uppercase;letter-spacing:.6px;font-size:1.05rem}
+.modal-card .msub{color:var(--text2);font-size:.76rem;line-height:1.6;margin:6px 0 16px}
+.modal-card label{display:block;margin:11px 0 4px;font-size:.66rem;letter-spacing:.5px;text-transform:uppercase;
+  color:var(--text3);font-weight:700}
+.modal-card input{width:100%;padding:9px 11px;background:var(--bg3);border:1px solid var(--border2);
+  border-radius:8px;color:var(--text);font-size:.85rem;font-family:var(--mono)}
+.modal-card input:focus{outline:none;border-color:var(--cyan)}
+.dev-private{float:right;text-transform:none;letter-spacing:0;font-weight:400;color:var(--text3);font-size:.62rem}
+.dev-cmd{margin-top:16px;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:10px}
+.dev-cmd p{font-size:.68rem;color:var(--text3);line-height:1.55;margin-bottom:7px}
+.dev-cmd code{display:block;font-family:var(--mono);font-size:.62rem;color:var(--text2);white-space:pre-wrap;
+  word-break:break-word;line-height:1.5}
+.dev-cmd button{margin-top:8px;background:var(--bg2);border:1px solid var(--border2);color:var(--text2);
+  border-radius:7px;padding:5px 11px;font-size:.68rem;cursor:pointer}
+.dev-cmd button:hover{border-color:var(--cyan);color:var(--cyan)}
+.modal-btns{display:flex;gap:8px;margin-top:18px}
+.modal-btns button{flex:1;padding:11px;border-radius:9px;border:1px solid var(--border2);background:var(--bg3);
+  color:var(--text);font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font)}
+.modal-btns .primary{background:var(--cyan);border-color:var(--cyan);color:#001018}
+.modal-btns .primary:hover{background:var(--cyan-dark)}
+.modal-btns .danger{flex:0 0 auto;color:var(--bad);border-color:var(--bad-bd)}
 
 /* ══ TABS ══ */
 .tabs{display:flex;gap:6px;margin:20px 0 14px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:0}
@@ -328,15 +377,53 @@ footer b{color:var(--cyan)}
   </footer>
 </div>
 
+<!-- ══════════════ REGISTER LAPTOP ══════════════
+     The model is safe to publish and ships in the page. The hostname, serial
+     and MAC are not — they are written to this browser's localStorage only and
+     never leave it, which is why this repo (public, for GitHub Pages) can carry
+     the dialog without carrying the values. -->
+<div class="modal" id="devModal" hidden onclick="if(event.target===this)closeDevice()">
+  <div class="modal-card">
+    <h2>Register laptop</h2>
+    <div class="msub"><b id="devWho"></b> always works on one machine, so recording it gives you
+      context on the card. It is <b>not</b> proof of who did what — no IBI app records the device
+      that made a change.</div>
+    <div id="devFields"></div>
+    <div class="dev-cmd">
+      <p>Staff laptops can't be read over the Wi-Fi (client isolation is on), so run this
+         <b>on that laptop</b> and copy the four values in:</p>
+      <code id="devCmd">$a = Get-NetAdapter | Where-Object Status -eq 'Up' | Select-Object -First 1
+[PSCustomObject]@{ Hostname=$env:COMPUTERNAME; MAC=$a.MacAddress; Model=(Get-CimInstance Win32_ComputerSystem).Model; Serial=(Get-CimInstance Win32_BIOS).SerialNumber }</code>
+      <button onclick="copyDevCmd()">Copy command</button>
+    </div>
+    <div class="modal-btns">
+      <button class="danger" onclick="clearDevice()">Clear</button>
+      <button onclick="closeDevice()">Cancel</button>
+      <button class="primary" onclick="saveDevice()">Save</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 /* ══════════════════════════════════════════════════════════════════════
    IBI STAFF SUPERVISION — live cross-app staff activity monitor
    ══════════════════════════════════════════════════════════════════════ */
-window.IBI_VERSION = 'v2.0';
-window.IBI_VERSION_DATE = '13 Aug 2026';
-window.IBI_VERSION_NOTE = 'Runs only while you are watching. The backend (v1.4) used to '
+window.IBI_VERSION = 'v3.0';
+window.IBI_VERSION_DATE = '15 Aug 2026';
+window.IBI_VERSION_NOTE = 'Order Processing is now a tracked app, a person can own more than '
+  + 'one app, and laptops are registered from the card instead of the console.'
+  + '\n\nA staff member covers as many apps as they actually work in — Aswin runs Stock '
+  + 'Availability AND Order Processing — so the single-choice dropdown became a tick list, '
+  + 'and the card shows every app a person holds. Order Processing (orders.…) is the ninth '
+  + 'feed: new orders and edits to them now appear in the activity feed instead of being '
+  + 'invisible. It is polled every third cycle (~2¼ min) because its endpoint reads the whole '
+  + '1,400-row Orders sheet with no cache, and every IBI app shares one Apps Script quota. '
+  + 'The 💻 chip is now a button: it carries each person\'s laptop model out of the box and '
+  + 'opens a form for the hostname, serial and MAC — those stay in this browser and are never '
+  + 'published, because this repo has to be public for GitHub Pages.'
+  + '\n\nv2.0 — Runs only while you are watching. The backend (v1.4) used to '
   + 'ingest every 5 minutes round the clock, which alone spent about five times this '
   + 'Google account’s entire daily script allowance and was the reason other IBI apps '
   + 'answered slowly or not at all. It now ingests at full speed only while this dashboard '
@@ -365,27 +452,115 @@ const STAFF = [
 
 /* ── Known laptops ──
    Each person always works on their own machine, so the laptop is a second
-   attribution signal. Registrations are kept in localStorage ONLY and are
-   deliberately NOT committed: this repo has to be public for GitHub Pages, and
-   a hostname + BIOS serial + MAC address is exactly the kind of thing that
-   should not sit in a public file. Register a machine from the browser console:
+   piece of context on the staff card. Knowledge of it comes at TWO levels and
+   they are deliberately kept apart:
 
-     ibiRegisterDevice('ceo', {hostname:'…', model:'…', serial:'…', mac:'…'})
+   1. MODEL — *which* machine the person uses. This is not a secret ("HP Victus"
+      tells an outsider nothing), so it ships in this file and shows on every
+      device the CEO opens the dashboard on, with no setup.
+   2. HARDWARE IDs — hostname, BIOS serial, MAC. These identify one specific
+      machine, and this repo has to be PUBLIC for GitHub Pages to serve it, so
+      they are NEVER committed. They live in this browser's localStorage only,
+      entered through the 💻 chip on the staff card (or from the console with
+      ibiRegisterDevice('m_ajay', {hostname:'…', serial:'…', mac:'…'})).
 
-   Get those values by running this on the laptop being registered:
+   ⚠ A laptop ID does not attribute app activity, and this chip never claims it
+   does. No IBI backend records IP, user-agent or device — binding work to a
+   machine would mean stamping the WRITE itself inside each app. The chip is
+   context for the CEO, nothing more; attribution still comes from the Task
+   Manager, the punch clock and the app assignment below.
+
+   ⚠ The staff laptops cannot be fingerprinted from here: the Wi-Fi has client
+   isolation on — an ARP sweep of 192.168.18.0/24 returns the gateway and
+   nothing else — so their IDs must be read off each machine by hand:
      $a = Get-NetAdapter | Where-Object Status -eq 'Up' | Select-Object -First 1
      [PSCustomObject]@{ Hostname=$env:COMPUTERNAME; MAC=$a.MacAddress
        Model=(Get-CimInstance Win32_ComputerSystem).Model
        Serial=(Get-CimInstance Win32_BIOS).SerialNumber }                     */
+const DEVICE_MODELS = {
+  m_ajay:  { model:'HP Victus', note:'HP Victus — the high-spec gaming laptop' },
+  s_aswin: { model:'HP laptop', note:'Standard entry-level HP laptop' }
+  /* The CEO's own machine is registered per-browser, not shipped here — its
+     hostname and serial were moved out of source when this repo went public. */
+};
+const DEV_FIELDS = [
+  { k:'model',    label:'Model',       ph:'HP Victus',          safe:true  },
+  { k:'hostname', label:'Hostname',    ph:'DESKTOP-XXXXXXX',    safe:false },
+  { k:'serial',   label:'BIOS serial', ph:'5CD1234ABC',         safe:false },
+  { k:'mac',      label:'Wi-Fi MAC',   ph:'A1-B2-C3-D4-E5-F6',  safe:false }
+];
 let DEVICES = load('ibi_sup_devices', {});
+
+/* Merge what ships in the file with what this browser has registered. */
+function deviceOf(personId){
+  const reg  = DEVICES[personId] || {};
+  const base = DEVICE_MODELS[personId] || {};
+  const idOf = f => String(reg[f] || '').trim();
+  return {
+    model:    idOf('model') || base.model || '',
+    note:     base.note || '',
+    hostname: idOf('hostname'), serial: idOf('serial'), mac: idOf('mac'),
+    // "confirmed" means at least one ID was read off the machine itself.
+    confirmed: !!(idOf('hostname') || idOf('serial') || idOf('mac')),
+    known:     !!(idOf('model') || base.model)
+  };
+}
 function ibiRegisterDevice(personId, info){
   if(!personById(personId)) return 'Unknown person id. Use: ' + STAFF.map(s => s.id).join(', ');
-  DEVICES[personId] = Object.assign({ hostname:'', model:'', serial:'', mac:'' }, info, { confirmed:true });
+  const cur = DEVICES[personId] || {};
+  const next = {};
+  DEV_FIELDS.forEach(f => {
+    const v = String((info && info[f.k] != null ? info[f.k] : cur[f.k]) || '').trim();
+    if(v) next[f.k] = v;
+  });
+  if(Object.keys(next).length) DEVICES[personId] = next; else delete DEVICES[personId];
   save('ibi_sup_devices', DEVICES);
   renderStaff();
-  return personById(personId).name + ' → ' + (info.hostname || 'registered');
+  const d = deviceOf(personId);
+  return personById(personId).name + ' → ' + (d.hostname || d.model || 'cleared');
 }
 window.ibiRegisterDevice = ibiRegisterDevice;
+
+/* ── Register-laptop dialog ── */
+let devEditing = null;
+function openDevice(personId){
+  const p = personById(personId); if(!p) return;
+  devEditing = personId;
+  const reg = DEVICES[personId] || {};
+  const base = DEVICE_MODELS[personId] || {};
+  document.getElementById('devWho').textContent = p.name;
+  document.getElementById('devFields').innerHTML = DEV_FIELDS.map(f =>
+      '<label for="dev_' + f.k + '">' + esc(f.label)
+    + (f.safe ? '' : ' <span class="dev-private">stays on this device</span>') + '</label>'
+    + '<input id="dev_' + f.k + '" value="' + esc(reg[f.k] || '') + '" placeholder="'
+    + esc(f.k === 'model' && base.model ? base.model : f.ph) + '" autocomplete="off" spellcheck="false">'
+  ).join('');
+  document.getElementById('devModal').hidden = false;
+  setTimeout(() => { const el = document.getElementById('dev_model'); if(el) el.focus(); }, 30);
+}
+function closeDevice(){ document.getElementById('devModal').hidden = true; devEditing = null; }
+function saveDevice(){
+  if(!devEditing) return;
+  const info = {};
+  DEV_FIELDS.forEach(f => info[f.k] = (document.getElementById('dev_' + f.k) || {}).value || '');
+  const msg = ibiRegisterDevice(devEditing, info);
+  closeDevice();
+  toast(msg);
+}
+function clearDevice(){
+  if(!devEditing) return;
+  const id = devEditing;
+  delete DEVICES[id];
+  save('ibi_sup_devices', DEVICES);
+  closeDevice(); renderStaff();
+  toast(personById(id).name + ' — laptop details cleared');
+}
+function copyDevCmd(){
+  const t = document.getElementById('devCmd').textContent;
+  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject())
+    .then(() => toast('Command copied — run it on that laptop'))
+    .catch(() => toast('Copy failed — select the text manually'));
+}
 
 /* Task Manager id -> roster entry */
 function personById(id){
@@ -447,6 +622,34 @@ const APPS = [
     watch:['status','statusDetail','awb','courier','products','qty','amount','shipDate','expectedDelivery','buyerName','pincode'],
     nice:{status:'Status',statusDetail:'Detail',awb:'AWB',courier:'Courier',products:'Products',qty:'Qty',
           amount:'Amount ₹',shipDate:'Ship date',expectedDelivery:'Expected',buyerName:'Buyer',pincode:'Pincode'}
+  },
+  {
+    key:'orders', name:'Order Processing', short:'Orders', colour:'#60a5fa',
+    site:'https://orders.indiabusinessinternational.online/',
+    url:GAS('AKfycbydsL-wCm-oJzXNEBf58q7FkM8JehYijkkiBd8NuzJScjIQ4beR06FSFNdLnZT_yEDq'),
+    /* doGet takes no action — it always returns the whole Orders sheet. */
+    method:'GET', params:{},
+    pick:d => d.orders || [],
+    /* Order ID is the real key, but rows entered before that column existed
+       have none — fall back to the sheet's own serial so they still diff. */
+    id:r => String(r['Order ID'] || '').trim() || ('sn' + r['Serial Number']),
+    label:r => (r['Product Name'] || 'Order') + ' · ' + (r['Platform'] || ''),
+    /* "15 August 2026  11:07:23" — the backend writes two spaces between the
+       date and the time, which Date() tolerates but is not worth relying on. */
+    stamp:r => String(r['Entry Date & Time'] || '').replace(/\s+/g, ' ').trim(),
+    watch:['Platform','Courier Service','Product Name','Retail Price (Rs)','Qty Sold','Payment Type',
+           'Shipment Type','Pickup Date','Name of Buyer','Location / City','State / UT',
+           'Pkg Wt (gm)','B.Wt (gms)','Order ID','Invoice Number'],
+    nice:{'Platform':'Platform','Courier Service':'Courier','Product Name':'Product',
+          'Retail Price (Rs)':'Order total ₹','Qty Sold':'Qty sold','Payment Type':'Payment',
+          'Shipment Type':'Shipment','Pickup Date':'Pickup date','Name of Buyer':'Buyer',
+          'Location / City':'City','State / UT':'State','Pkg Wt (gm)':'Package wt',
+          'B.Wt (gms)':'Billed wt','Order ID':'Order ID','Invoice Number':'Invoice no'},
+    /* ⚠ This feed is expensive: doGet has no cache and getDataRange()s the whole
+       1,400+ row Orders sheet on every call. Every IBI app shares ONE Apps Script
+       quota, so it is polled every 3rd cycle (~2¼ min) rather than every 45 s.
+       Nothing is lost — changes are found by diffing a snapshot, not by clock. */
+    everyNth:3, timeout:45000
   },
   {
     key:'pickup', name:'Pickup Manager', short:'Pickup', colour:'#f472b6',
@@ -521,9 +724,28 @@ const LS = {
   theme:'ibi_sup_theme', seen:'ibi_sup_seen'
 };
 let events   = load(LS.events, []);
-/* Ajay is Catalogue Manager (listings), Aswin is Packaging Manager
-   (stock, packages, dimensions, returns) — roles read from the Task Manager. */
-let assign   = load(LS.assign, { market:'M. Ajay', stock:'S. Aswin', finance:'Dr T Sasimurugan' });
+/* Ajay is Catalogue Manager (listings), Aswin is Packaging Manager (stock,
+   packages, dimensions, returns) — roles read from the Task Manager. Aswin
+   owns Order Processing as well as Stock: a person covers as many apps as they
+   actually work in, and the map is keyed by app so that costs nothing. */
+const DEFAULT_ASSIGN = { market:'M. Ajay', stock:'S. Aswin', orders:'S. Aswin',
+                         finance:'Dr T Sasimurugan' };
+let assign   = load(LS.assign, null) || Object.assign({}, DEFAULT_ASSIGN);
+/* An app added after this browser first saved its map would otherwise stay
+   unassigned on that machine for ever. Seed each new key ONCE, and only into a
+   gap — a key the CEO has deliberately cleared must not come back next load. */
+(function seedNewApps(){
+  const KEY = 'ibi_sup_assign_seeded';
+  const seeded = load(KEY, []);
+  let changed = false;
+  Object.keys(DEFAULT_ASSIGN).forEach(k => {
+    if(seeded.indexOf(k) !== -1) return;
+    seeded.push(k);
+    if(!assign[k]){ assign[k] = DEFAULT_ASSIGN[k]; changed = true; }
+  });
+  save(KEY, seeded);
+  if(changed) save(LS.assign, assign);
+})();
 let attend   = {};            // staffName -> {state, punches, since}
 let health   = {};            // appKey -> {ok, count, last, err, ms}
 let records  = {};            // appKey -> [normalised records]
@@ -1005,7 +1227,7 @@ function renderStaff(){
   document.getElementById('staffGrid').innerHTML = STAFF.map(s => {
     const st  = attend[s.name] || { state:'?', punches:[], since:null };
     const on  = s.attend ? st.state === 'IN' : true;   // CEO is always "active"
-    const dev = DEVICES[s.id] || {};
+    const dev = deviceOf(s.id);
     const my  = events.filter(e => { const at = attribute(e); return at && at.name === s.name; });
     const tod = my.filter(e => isToday(new Date(e.t)));
     const hr  = my.filter(e => Date.now() - e.t < 3600000);
@@ -1055,24 +1277,84 @@ function renderStaff(){
           ? '<div class="punchstrip">' + st.punches.map(p =>
               '<span class="punch ' + (p.type === 'IN' ? 'in' : 'out') + '">' + p.type + ' ' + esc(p.time) + '</span>').join('') + '</div>'
           : '')
-      + '<div class="punchstrip"><span class="punch" style="' + (dev.confirmed ? 'color:var(--cyan);border-color:var(--cyan-dark)' : 'color:var(--text3)') + '" '
-        + 'title="' + (dev.confirmed ? esc(dev.model + ' · serial ' + dev.serial + ' · ' + dev.mac) : 'Not registered yet') + '">'
-        + '💻 ' + (dev.confirmed ? esc(dev.hostname) : 'laptop not registered') + '</span></div>'
-      + '<div class="assign-row"><span>Assigned app</span>'
-        + '<select data-staff="' + esc(s.name) + '" onchange="setAssign(this.value, this.dataset.staff)">'
-        + '<option value=""' + (mine.length ? '' : ' selected') + '>— not assigned —</option>'
-        + APPS.map(a => '<option value="' + a.key + '"' + (mine[0] === a.key ? ' selected' : '') + '>'
-            + esc(a.name) + '</option>').join('')
-        + '</select></div>'
+      + '<div class="punchstrip">' + devChip(s, dev) + '</div>'
+      /* A person owns as many apps as they actually work in — Aswin runs both
+         Stock and Order Processing. The map is one app → one person, so ticking
+         an app that belongs to someone else moves it rather than duplicating it.
+         Collapsed by default: the picker only opens when the CEO asks for it. */
+      + '<div class="assign-row"><span>Assigned apps</span>'
+        + '<div class="assign-now">'
+          + (mine.length
+              ? mine.map(k => '<span class="atag" style="border-color:' + appOf(k).colour + ';color:'
+                  + appOf(k).colour + '">' + esc(appOf(k).short) + '</span>').join('')
+              : '<span class="atag none">— not assigned —</span>')
+        + '</div>'
+        + '<button class="assign-edit" onclick="toggleAssignPicker(\'' + esc(s.id) + '\')" '
+          + 'title="Choose which apps this person works in">✎</button>'
+      + '</div>'
+      + '<div class="appsel" id="appsel_' + esc(s.id) + '" hidden>'
+        + APPS.map(a => {
+            const ownedBy = assign[a.key] || '';
+            const on  = ownedBy === s.name;
+            const oth = ownedBy && !on;
+            return '<button class="apick' + (on ? ' on' : '') + (oth ? ' taken' : '') + '" '
+              + 'onclick="toggleAssign(\'' + a.key + '\',\'' + esc(s.name) + '\')" '
+              + 'style="' + (on ? 'border-color:' + a.colour + ';color:' + a.colour : '') + '" '
+              + 'title="' + (oth ? esc(a.name + ' — currently ' + ownedBy + '. Ticking it moves the app to ' + s.name + '.')
+                                 : esc(a.name)) + '">'
+              + (on ? '✓ ' : '') + esc(a.short)
+              + (oth ? '<i>' + esc(initialsOf(ownedBy)) + '</i>' : '') + '</button>';
+          }).join('')
+        + '<div class="appsel-note">One app belongs to one person. Activity in an assigned app is '
+        + 'attributed to them only while they are punched in, and always shown as <em>≈ inferred</em> '
+        + 'rather than recorded.</div>'
+      + '</div>'
       + '</div>';
   }).join('');
 }
-function setAssign(appKey, staffName){
-  Object.keys(assign).forEach(k => { if(assign[k] === staffName) delete assign[k]; });
-  if(appKey) assign[appKey] = staffName;
+function devChip(s, dev){
+  let cls = 'dev-chip', txt, title;
+  if(dev.confirmed){
+    cls += ' on';
+    txt = dev.hostname || dev.model;
+    title = [dev.model, dev.hostname && 'host ' + dev.hostname, dev.serial && 'serial ' + dev.serial,
+             dev.mac && dev.mac].filter(Boolean).join(' · ') + '\nClick to edit.';
+  } else if(dev.known){
+    cls += ' part';
+    txt = dev.model;
+    title = (dev.note || dev.model) + '\nModel recorded, but this machine\'s hostname, serial and MAC '
+          + 'have not been read off it yet. Click to add them — they stay on this device.';
+  } else {
+    txt = 'laptop not registered';
+    title = 'No laptop recorded for ' + s.name + '. Click to register one.';
+  }
+  return '<button class="' + cls + '" onclick="openDevice(\'' + esc(s.id) + '\')" title="' + esc(title) + '">'
+       + '💻 ' + esc(txt) + '</button>';
+}
+function initialsOf(name){
+  const p = STAFF.find(x => x.name === name);
+  return p ? p.initials : String(name || '').slice(0, 2).toUpperCase();
+}
+function toggleAssignPicker(staffId){
+  const el = document.getElementById('appsel_' + staffId);
+  if(el) el.hidden = !el.hidden;
+}
+/* Tick = this person owns the app; untick = nobody does. Because the map is
+   keyed by app, taking an app simply overwrites whoever held it before. */
+function toggleAssign(appKey, staffName){
+  const openIds = STAFF.filter(s => { const e = document.getElementById('appsel_' + s.id); return e && !e.hidden; })
+                       .map(s => s.id);
+  const was = assign[appKey] || '';
+  if(was === staffName){ delete assign[appKey]; toast(staffName + ' no longer covers ' + appOf(appKey).name); }
+  else {
+    assign[appKey] = staffName;
+    toast(was ? appOf(appKey).name + ': ' + was + ' → ' + staffName
+              : staffName + ' → ' + appOf(appKey).name);
+  }
   save(LS.assign, assign);
-  renderStaff(); renderFeed();
-  toast(appKey ? staffName + ' → ' + appOf(appKey).name : staffName + ' unassigned');
+  renderStaff(); renderFeed(); renderToday();
+  // Re-rendering rebuilds the cards, so put the pickers the CEO had open back.
+  openIds.forEach(id => { const e = document.getElementById('appsel_' + id); if(e) e.hidden = false; });
 }
 
 function renderChips(){
@@ -1097,7 +1379,7 @@ function describe(e){
 }
 function rowWord(app){
   return ({ stock:'stock row', dims:'dimensions entry', returns:'return', tracker:'package',
-            pickup:'dispatch', tasks:'task', market:'listing' })[app.key] || 'record';
+            orders:'order', pickup:'dispatch', tasks:'task', market:'listing' })[app.key] || 'record';
 }
 function renderFeed(){
   const q = (document.getElementById('feedSearch').value || '').toLowerCase().trim();
