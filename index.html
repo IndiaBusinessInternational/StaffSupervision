@@ -318,7 +318,7 @@ footer b{color:var(--cyan)}
     <div class="brand">
       <svg viewBox="0 0 184 184"><rect width="184" height="184" rx="30" fill="#000"/><g fill="#00c5ff"><circle cx="24" cy="24" r="4.5"/><circle cx="58" cy="24" r="7.5"/><circle cx="92" cy="24" r="10.5"/><circle cx="126" cy="24" r="13.5"/><circle cx="160" cy="24" r="16.5"/><circle cx="24" cy="58" r="4.5"/><circle cx="58" cy="58" r="7.5"/><circle cx="92" cy="58" r="10.5"/><circle cx="126" cy="58" r="13.5"/><circle cx="160" cy="58" r="16.5"/><circle cx="24" cy="92" r="4.5"/><circle cx="58" cy="92" r="7.5"/><circle cx="92" cy="92" r="10.5"/><circle cx="126" cy="92" r="13.5"/><circle cx="160" cy="92" r="16.5"/><circle cx="24" cy="126" r="4.5"/><circle cx="58" cy="126" r="7.5"/><circle cx="92" cy="126" r="10.5"/><circle cx="126" cy="126" r="13.5"/><circle cx="160" cy="126" r="16.5"/><circle cx="24" cy="160" r="4.5"/><circle cx="58" cy="160" r="7.5"/><circle cx="92" cy="160" r="10.5"/><circle cx="126" cy="160" r="13.5"/><circle cx="160" cy="160" r="16.5"/></g></svg>
       <span class="brand-txt">IBI Supervision</span>
-      <span class="ver-badge" id="verBadge" title="">v3.1</span>
+      <span class="ver-badge" id="verBadge" title="">v3.2</span>
     </div>
     <div class="tb-spacer"></div>
     <div class="livepill" id="livePill"><span class="dot" id="liveDot"></span><span id="liveTxt">idle</span></div>
@@ -410,14 +410,15 @@ footer b{color:var(--cyan)}
 /* ══════════════════════════════════════════════════════════════════════
    IBI STAFF SUPERVISION — live cross-app staff activity monitor
    ══════════════════════════════════════════════════════════════════════ */
-window.IBI_VERSION = 'v3.1';
+window.IBI_VERSION = 'v3.2';
 window.IBI_VERSION_DATE = '22 Aug 2026';
 window.IBI_VERSION_NOTE = 'A. Akash (Assistant Catalogue Manager) joins the roster as the third '
-  + 'staff member, with his own duty card, attendance feed and app tick list.'
-  + '\n\nHe has no app assigned yet — tick the apps he covers on his card, or his activity stays '
-  + 'unattributed. No laptop is registered for him either, so use the 💻 chip once you have run the '
-  + 'PowerShell one-liner on his machine. His attendance is a third call inside the same pool of 3, '
-  + 'so nothing else got slower.'
+  + 'staff member, with his own duty card, attendance feed, laptop and app tick list.'
+  + '\n\nHis laptop is a Lenovo LOQ. Only the MODEL ships in the page — the hostname, BIOS serial '
+  + 'and MAC are still unknown, so run the PowerShell one-liner on his machine and enter them '
+  + 'through the 💻 chip, which keeps them in this browser only. He has no app assigned yet: tick '
+  + 'the apps he covers on his card, or everything outside the Task Manager stays unattributed. '
+  + 'His attendance is a third call inside the same pool of 3, so nothing else got slower.'
   + '\n\nPREVIOUS (v3.0): Order Processing is a tracked app, a person can own more than '
   + 'one app, and laptops are registered from the card instead of the console.'
   + '\n\nA staff member covers as many apps as they actually work in — Aswin runs Stock '
@@ -486,7 +487,8 @@ const STAFF = [
        Serial=(Get-CimInstance Win32_BIOS).SerialNumber }                     */
 const DEVICE_MODELS = {
   m_ajay:  { model:'HP Victus', note:'HP Victus — the high-spec gaming laptop' },
-  s_aswin: { model:'HP laptop', note:'Standard entry-level HP laptop' }
+  s_aswin: { model:'HP laptop', note:'Standard entry-level HP laptop' },
+  a_akash: { model:'Lenovo LOQ', note:'Lenovo LOQ laptop' }
   /* The CEO's own machine is registered per-browser, not shipped here — its
      hostname and serial were moved out of source when this repo went public. */
 };

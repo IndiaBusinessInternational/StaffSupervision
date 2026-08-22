@@ -2,7 +2,7 @@
    Network-first for everything: this is a live monitoring tool, so a stale
    cached shell must never win over a fresh one. The cache only exists so the
    app still opens (and shows its last snapshot) when the network is down.  */
-const CACHE = 'ibi-supervision-v3-1';
+const CACHE = 'ibi-supervision-v3-2';
 const SHELL = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
