@@ -318,7 +318,7 @@ footer b{color:var(--cyan)}
     <div class="brand">
       <svg viewBox="0 0 184 184"><rect width="184" height="184" rx="30" fill="#000"/><g fill="#00c5ff"><circle cx="24" cy="24" r="4.5"/><circle cx="58" cy="24" r="7.5"/><circle cx="92" cy="24" r="10.5"/><circle cx="126" cy="24" r="13.5"/><circle cx="160" cy="24" r="16.5"/><circle cx="24" cy="58" r="4.5"/><circle cx="58" cy="58" r="7.5"/><circle cx="92" cy="58" r="10.5"/><circle cx="126" cy="58" r="13.5"/><circle cx="160" cy="58" r="16.5"/><circle cx="24" cy="92" r="4.5"/><circle cx="58" cy="92" r="7.5"/><circle cx="92" cy="92" r="10.5"/><circle cx="126" cy="92" r="13.5"/><circle cx="160" cy="92" r="16.5"/><circle cx="24" cy="126" r="4.5"/><circle cx="58" cy="126" r="7.5"/><circle cx="92" cy="126" r="10.5"/><circle cx="126" cy="126" r="13.5"/><circle cx="160" cy="126" r="16.5"/><circle cx="24" cy="160" r="4.5"/><circle cx="58" cy="160" r="7.5"/><circle cx="92" cy="160" r="10.5"/><circle cx="126" cy="160" r="13.5"/><circle cx="160" cy="160" r="16.5"/></g></svg>
       <span class="brand-txt">IBI Supervision</span>
-      <span class="ver-badge" id="verBadge" title="">v1.1</span>
+      <span class="ver-badge" id="verBadge" title="">v3.1</span>
     </div>
     <div class="tb-spacer"></div>
     <div class="livepill" id="livePill"><span class="dot" id="liveDot"></span><span id="liveTxt">idle</span></div>
@@ -410,9 +410,15 @@ footer b{color:var(--cyan)}
 /* ══════════════════════════════════════════════════════════════════════
    IBI STAFF SUPERVISION — live cross-app staff activity monitor
    ══════════════════════════════════════════════════════════════════════ */
-window.IBI_VERSION = 'v3.0';
-window.IBI_VERSION_DATE = '15 Aug 2026';
-window.IBI_VERSION_NOTE = 'Order Processing is now a tracked app, a person can own more than '
+window.IBI_VERSION = 'v3.1';
+window.IBI_VERSION_DATE = '22 Aug 2026';
+window.IBI_VERSION_NOTE = 'A. Akash (Assistant Catalogue Manager) joins the roster as the third '
+  + 'staff member, with his own duty card, attendance feed and app tick list.'
+  + '\n\nHe has no app assigned yet — tick the apps he covers on his card, or his activity stays '
+  + 'unattributed. No laptop is registered for him either, so use the 💻 chip once you have run the '
+  + 'PowerShell one-liner on his machine. His attendance is a third call inside the same pool of 3, '
+  + 'so nothing else got slower.'
+  + '\n\nPREVIOUS (v3.0): Order Processing is a tracked app, a person can own more than '
   + 'one app, and laptops are registered from the card instead of the console.'
   + '\n\nA staff member covers as many apps as they actually work in — Aswin runs Stock '
   + 'Availability AND Order Processing — so the single-choice dropdown became a tick list, '
@@ -445,6 +451,7 @@ const GAS = id => 'https://script.google.com/macros/s/' + id + '/exec';
 const STAFF = [
   { id:'s_aswin', name:'S. Aswin', initials:'SA', role:'Packaging Manager', attend:true },
   { id:'m_ajay',  name:'M. Ajay',  initials:'MA', role:'Catalogue Manager', attend:true },
+  { id:'a_akash', name:'A. Akash', initials:'AA', role:'Assistant Catalogue Manager', attend:true },
   { id:'ceo',     name:'Dr T Sasimurugan', initials:'TS',
     role:'Founder & CEO', attend:false, isCeo:true,
     full:'Dr T Sasimurugan ME.,PhD., Founder & CEO, India Business International' }
