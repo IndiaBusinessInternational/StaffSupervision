@@ -318,7 +318,7 @@ footer b{color:var(--cyan)}
     <div class="brand">
       <svg viewBox="0 0 184 184"><rect width="184" height="184" rx="30" fill="#000"/><g fill="#00c5ff"><circle cx="24" cy="24" r="4.5"/><circle cx="58" cy="24" r="7.5"/><circle cx="92" cy="24" r="10.5"/><circle cx="126" cy="24" r="13.5"/><circle cx="160" cy="24" r="16.5"/><circle cx="24" cy="58" r="4.5"/><circle cx="58" cy="58" r="7.5"/><circle cx="92" cy="58" r="10.5"/><circle cx="126" cy="58" r="13.5"/><circle cx="160" cy="58" r="16.5"/><circle cx="24" cy="92" r="4.5"/><circle cx="58" cy="92" r="7.5"/><circle cx="92" cy="92" r="10.5"/><circle cx="126" cy="92" r="13.5"/><circle cx="160" cy="92" r="16.5"/><circle cx="24" cy="126" r="4.5"/><circle cx="58" cy="126" r="7.5"/><circle cx="92" cy="126" r="10.5"/><circle cx="126" cy="126" r="13.5"/><circle cx="160" cy="126" r="16.5"/><circle cx="24" cy="160" r="4.5"/><circle cx="58" cy="160" r="7.5"/><circle cx="92" cy="160" r="10.5"/><circle cx="126" cy="160" r="13.5"/><circle cx="160" cy="160" r="16.5"/></g></svg>
       <span class="brand-txt">IBI Supervision</span>
-      <span class="ver-badge" id="verBadge" title="">v3.3</span>
+      <span class="ver-badge" id="verBadge" title="">v3.4</span>
     </div>
     <div class="tb-spacer"></div>
     <div class="livepill" id="livePill"><span class="dot" id="liveDot"></span><span id="liveTxt">idle</span></div>
@@ -379,9 +379,9 @@ footer b{color:var(--cyan)}
 
 <!-- ══════════════ REGISTER LAPTOP ══════════════
      The model is safe to publish and ships in the page. The hostname, serial
-     and MAC are not — they are written to this browser's localStorage only and
-     never leave it, which is why this repo (public, for GitHub Pages) can carry
-     the dialog without carrying the values. -->
+     and MAC are not — they go to the backend's Script Property DEVICES behind
+     the CEO PIN (v3.4; localStorage is only the cache), which is why this repo
+     (public, for GitHub Pages) can carry the dialog without carrying the values. -->
 <div class="modal" id="devModal" hidden onclick="if(event.target===this)closeDevice()">
   <div class="modal-card">
     <h2>Register laptop</h2>
@@ -410,9 +410,17 @@ footer b{color:var(--cyan)}
 /* ══════════════════════════════════════════════════════════════════════
    IBI STAFF SUPERVISION — live cross-app staff activity monitor
    ══════════════════════════════════════════════════════════════════════ */
-window.IBI_VERSION = 'v3.3';
-window.IBI_VERSION_DATE = '22 Aug 2026';
-window.IBI_VERSION_NOTE = 'S. Akash (Assistant Catalogue Manager) joins the roster as the third '
+window.IBI_VERSION = 'v3.4';
+window.IBI_VERSION_DATE = '23 Aug 2026';
+window.IBI_VERSION_NOTE = 'Staff laptops are now held on the server. The hostname, BIOS serial and '
+  + 'MAC of every registered laptop live in the supervision backend (Script Property DEVICES) '
+  + 'behind the CEO password, so they show on every browser and phone the CEO opens this on, '
+  + 'not just the one they were typed into. Reading or writing them without the password is '
+  + 'refused, so the public endpoint reveals nothing. This browser keeps a copy as an offline '
+  + 'cache, and the first unlock after the upgrade copies an existing local registry upward.'
+  + '\n\nAll four machines are registered: CEO, S. Aswin (HP 245 G10), M. Ajay (HP Victus 15) '
+  + 'and S. Akash (Lenovo LOQ 83DV).'
+  + '\n\nPREVIOUS (v3.3): S. Akash (Assistant Catalogue Manager) joins the roster as the third '
   + 'staff member, with his own duty card, attendance feed, laptop and app tick list.'
   + '\n\nHis initials show as AK rather than SA, because "S. Akash" and "S. Aswin" both reduce to '
   + 'SA and two identical avatars would be unreadable. His internal id stays a_akash from before '
@@ -473,7 +481,8 @@ const STAFF = [
       device the CEO opens the dashboard on, with no setup.
    2. HARDWARE IDs — hostname, BIOS serial, MAC. These identify one specific
       machine, and this repo has to be PUBLIC for GitHub Pages to serve it, so
-      they are NEVER committed. They live in this browser's localStorage only,
+      they are NEVER committed. Since v3.4 they live in the backend's Script
+      Property DEVICES behind the CEO PIN (localStorage is the offline cache),
       entered through the 💻 chip on the staff card (or from the console with
       ibiRegisterDevice('m_ajay', {hostname:'…', serial:'…', mac:'…'})).
 
@@ -530,10 +539,49 @@ function ibiRegisterDevice(personId, info){
   if(Object.keys(next).length) DEVICES[personId] = next; else delete DEVICES[personId];
   save('ibi_sup_devices', DEVICES);
   renderStaff();
+  pushDevices();
   const d = deviceOf(personId);
   return personById(personId).name + ' → ' + (d.hostname || d.model || 'cleared');
 }
 window.ibiRegisterDevice = ibiRegisterDevice;
+
+/* ── Server-held registry (v3.4) ──
+   The hardware IDs used to live in one browser's localStorage only, so a second
+   browser, the phone, or a cleared cache showed no laptops at all. They now sit
+   in the backend's Script Property DEVICES (gitignored project, never in this
+   repo) behind the CEO PIN: getDevices/setDevices both refuse without it, so the
+   public endpoint leaks nothing. localStorage stays as the offline cache. */
+let DEV_SYNC = 'idle';   // idle | ok | off (no PIN / no backend) | error
+function devPin(){ return sessionStorage.getItem('ibi_sup_pin') || ''; }
+function devCall(action, extra){
+  if(!SUP_BACKEND || !devPin()) return Promise.resolve(null);
+  const body = new URLSearchParams(Object.assign({ action:action, pin:devPin() }, extra || {}));
+  return fetch(SUP_BACKEND, { method:'POST', body:body })
+    .then(r => r.json()).then(d => (d && d.status === 'ok') ? d : null).catch(() => null);
+}
+async function pullDevices(){
+  if(!SUP_BACKEND || !devPin()){ DEV_SYNC = 'off'; return; }
+  const d = await devCall('getDevices');
+  if(!d){ DEV_SYNC = 'error'; return; }
+  const remote = d.devices || {};
+  if(Object.keys(remote).length){
+    DEVICES = remote;                       // server is the source of truth
+    save('ibi_sup_devices', DEVICES);
+    DEV_SYNC = 'ok';
+    renderStaff();
+  }else if(Object.keys(DEVICES).length){
+    /* First run after the upgrade: the server is empty and this browser holds
+       the registry — seed it upward once so every other device gets it. */
+    const up = await devCall('setDevices', { devices:JSON.stringify(DEVICES) });
+    DEV_SYNC = up ? 'ok' : 'error';
+    if(up) toast('Laptop registry copied to the server');
+  }else DEV_SYNC = 'ok';
+}
+function pushDevices(){
+  devCall('setDevices', { devices:JSON.stringify(DEVICES) })
+    .then(d => { DEV_SYNC = d ? 'ok' : (devPin() && SUP_BACKEND ? 'error' : 'off');
+                 if(!d && DEV_SYNC === 'error') toast('Saved here — could not reach the server'); });
+}
 
 /* ── Register-laptop dialog ── */
 let devEditing = null;
@@ -545,7 +593,7 @@ function openDevice(personId){
   document.getElementById('devWho').textContent = p.name;
   document.getElementById('devFields').innerHTML = DEV_FIELDS.map(f =>
       '<label for="dev_' + f.k + '">' + esc(f.label)
-    + (f.safe ? '' : ' <span class="dev-private">stays on this device</span>') + '</label>'
+    + (f.safe ? '' : ' <span class="dev-private">private · CEO-only</span>') + '</label>'
     + '<input id="dev_' + f.k + '" value="' + esc(reg[f.k] || '') + '" placeholder="'
     + esc(f.k === 'model' && base.model ? base.model : f.ph) + '" autocomplete="off" spellcheck="false">'
   ).join('');
@@ -566,6 +614,7 @@ function clearDevice(){
   const id = devEditing;
   delete DEVICES[id];
   save('ibi_sup_devices', DEVICES);
+  pushDevices();
   closeDevice(); renderStaff();
   toast(personById(id).name + ' — laptop details cleared');
 }
@@ -848,6 +897,8 @@ function tryUnlock(){
 
   const unlock = () => {
     sessionStorage.setItem('ibi_sup_ok','1');
+    /* Kept for this tab only — the device registry calls are PIN-gated server-side. */
+    sessionStorage.setItem('ibi_sup_pin', pin);
     document.getElementById('gate').style.display = 'none';
     boot();
   };
@@ -1671,6 +1722,7 @@ function boot(){
   document.body.dataset.theme = load(LS.theme, 'dark');
   tickClock(); setInterval(tickClock, 1000);
   renderAll();
+  pullDevices();
   pollAll();
   kickIngest();                       // opening the page asks the server to ingest now
   pollTimer = setInterval(() => pollAll(), POLL_MS);
