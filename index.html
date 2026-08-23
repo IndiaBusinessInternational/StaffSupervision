@@ -318,7 +318,7 @@ footer b{color:var(--cyan)}
     <div class="brand">
       <svg viewBox="0 0 184 184"><rect width="184" height="184" rx="30" fill="#000"/><g fill="#00c5ff"><circle cx="24" cy="24" r="4.5"/><circle cx="58" cy="24" r="7.5"/><circle cx="92" cy="24" r="10.5"/><circle cx="126" cy="24" r="13.5"/><circle cx="160" cy="24" r="16.5"/><circle cx="24" cy="58" r="4.5"/><circle cx="58" cy="58" r="7.5"/><circle cx="92" cy="58" r="10.5"/><circle cx="126" cy="58" r="13.5"/><circle cx="160" cy="58" r="16.5"/><circle cx="24" cy="92" r="4.5"/><circle cx="58" cy="92" r="7.5"/><circle cx="92" cy="92" r="10.5"/><circle cx="126" cy="92" r="13.5"/><circle cx="160" cy="92" r="16.5"/><circle cx="24" cy="126" r="4.5"/><circle cx="58" cy="126" r="7.5"/><circle cx="92" cy="126" r="10.5"/><circle cx="126" cy="126" r="13.5"/><circle cx="160" cy="126" r="16.5"/><circle cx="24" cy="160" r="4.5"/><circle cx="58" cy="160" r="7.5"/><circle cx="92" cy="160" r="10.5"/><circle cx="126" cy="160" r="13.5"/><circle cx="160" cy="160" r="16.5"/></g></svg>
       <span class="brand-txt">IBI Supervision</span>
-      <span class="ver-badge" id="verBadge" title="">v3.4</span>
+      <span class="ver-badge" id="verBadge" title="">v3.5</span>
     </div>
     <div class="tb-spacer"></div>
     <div class="livepill" id="livePill"><span class="dot" id="liveDot"></span><span id="liveTxt">idle</span></div>
@@ -410,9 +410,21 @@ footer b{color:var(--cyan)}
 /* ══════════════════════════════════════════════════════════════════════
    IBI STAFF SUPERVISION — live cross-app staff activity monitor
    ══════════════════════════════════════════════════════════════════════ */
-window.IBI_VERSION = 'v3.4';
+window.IBI_VERSION = 'v3.5';
 window.IBI_VERSION_DATE = '23 Aug 2026';
-window.IBI_VERSION_NOTE = 'Staff laptops are now held on the server. The hostname, BIOS serial and '
+window.IBI_VERSION_NOTE = 'Every staff-allotted web app is now on the dashboard. All three staff '
+  + 'share the same 14 apps; five were missing here — Listing Generator, Group Messenger, Signed '
+  + 'Manifest, File Re-Namer and the Invoice & Label Separator. The first four now have a small '
+  + 'read-only list in their own backend (a generation log, the message feed, the manifests in '
+  + 'Drive, the files renamed in the last 3 days) and are watched like the others. The Invoice '
+  + 'Separator runs entirely in the browser with no backend, so it is listed for assignment but '
+  + 'has no activity feed. Group Messenger records the real sender, so its events show 👤 Name '
+  + 'as recorded fact, like the Task Manager. Staff Attendance already drives the duty cards and '
+  + 'is not an app on the list.'
+  + '\n\nDefault owners follow the division of work: Ajay and Akash on catalogue (Marketplace, '
+  + 'Listings), Aswin on order processing, packaging and despatch (Stock, Orders, Manifest, '
+  + 'Re-Namer, Invoice). Apps already ticked on a card are left as they were.'
+  + '\n\nPREVIOUS (v3.4): Staff laptops are now held on the server. The hostname, BIOS serial and '
   + 'MAC of every registered laptop live in the supervision backend (Script Property DEVICES) '
   + 'behind the CEO password, so they show on every browser and phone the CEO opens this on, '
   + 'not just the one they were typed into. Reading or writing them without the password is '
@@ -778,6 +790,75 @@ const APPS = [
     stamp:r => r.createdAt,
     watch:['date','type','description','party','amount','note'],
     nice:{date:'Date',type:'Type',description:'Description',party:'Party',amount:'Amount ₹',note:'Note'}
+  },
+
+  /* ── v3.5: the rest of the staff-allotted apps ──
+     All three staff share the same 14 web apps (CEO, 23 Aug 2026). The five
+     below were missing. Four gained a small read-only list action in their own
+     backend for this; the Invoice Separator has no backend at all (PDF work
+     stays in the browser), so it is listed for assignment but has no feed. */
+  {
+    key:'listings', name:'Listing Generator', short:'Listings', colour:'#34d399',
+    site:'https://listings.indiabusinessinternational.online/',
+    url:GAS('AKfycbzYkbfNqKUS1wBn0EvpEGbnNe_tpY68uq3ah2Z4i6VoZqV4Ra1fnVzEanSCO9iWuWsY'),
+    method:'GET', params:{action:'getLog'},
+    pick:d => d.items || [],
+    id:r => r.id, label:r => (r.product || 'Listing') + ' · ' + (r.platform || ''),
+    stamp:r => r.timestamp,              // "23 August 2026 10:15:02" — text, named month
+    watch:['platform','tone','title'],
+    nice:{platform:'Platform',tone:'Tone',title:'Title'},
+    everyNth:2
+  },
+  {
+    key:'messenger', name:'Group Messenger', short:'Messenger', colour:'#f59e0b',
+    site:'https://messenger.indiabusinessinternational.online/',
+    url:GAS('AKfycbwCDyszTKa3NnWwlI12fb3uT0oSM59Y61rEUlTazmFb5XDiYF55TlcvBtZOgsryr8XURg'),
+    method:'GET', params:{action:'fetch', since:'', limit:'300'},
+    pick:d => d.messages || [],
+    id:r => r.messageId,
+    label:r => (r.type && r.type !== 'text' ? '[' + r.type + '] ' : '') + String(r.text || '').slice(0, 60),
+    stamp:r => r.timestamp,              // ISO, server-set
+    /* The sender IS recorded here — the one app besides Task Manager and
+       Attendance that knows who acted. Map the display name onto the roster. */
+    /* Senders sign as "M.Ajay, IBI Manager - Cataloguing…" — compare only the
+       letters before the first comma, so "S. Aswin" and "S.Aswin" both resolve. */
+    who:r => { const n = String(r.sender || '').split(',')[0].toLowerCase().replace(/[^a-z]/g, '');
+               const p = n && STAFF.find(s => { const k = s.name.toLowerCase().replace(/[^a-z]/g, '');
+                                                return n === k || n.indexOf(k) === 0; });
+               return p ? p.id : String(r.sender || '').split(',')[0].trim(); },
+    watch:['text','editedAt','deletedAt','pinnedAt'],
+    nice:{text:'Message',editedAt:'Edited',deletedAt:'Deleted',pinnedAt:'Pinned'},
+    everyNth:2
+  },
+  {
+    key:'manifest', name:'Signed Manifest', short:'Manifest', colour:'#e879f9',
+    site:'https://manifest.indiabusinessinternational.online/',
+    url:GAS('AKfycbyR-r3tIlrg9ji-eaPXnSCkz19LSiOJmt-6mpp7TuU_MvxuimfkVQCGd2A_OfXR7h_M'),
+    method:'GET', params:{action:'list'},
+    pick:d => d.items || [],
+    id:r => r.id, label:r => r.name,
+    stamp:r => r.created,                // ISO from Drive
+    watch:['name'],
+    nice:{name:'File'},
+    everyNth:4
+  },
+  {
+    key:'renamer', name:'File Re-Namer', short:'Re-Namer', colour:'#2dd4bf',
+    site:'https://renamer.indiabusinessinternational.online/',
+    url:GAS('AKfycbxTI0mUjbZTxcmBHIAj6n_JZzsa0jznlXNI8gXioPlGv3OjrHs9pgaIhCauQ_18fU1JHA'),
+    method:'GET', params:{action:'list', days:'3'},
+    pick:d => d.items || [],
+    id:r => r.id, label:r => r.name + ' · ' + String(r.folder || '').replace(/^Orders /, ''),
+    stamp:r => r.created,
+    watch:['name','folder'],
+    nice:{name:'File',folder:'Day folder'},
+    everyNth:4, timeout:45000
+  },
+  {
+    key:'invoice', name:'Invoice & Label Separator', short:'Invoice', colour:'#94a3b8',
+    site:'https://invoice.indiabusinessinternational.online/',
+    noFeed:true,                         // no backend — nothing to diff
+    pick:() => [], id:() => '', label:() => '', watch:[], nice:{}
   }
 ];
 
@@ -792,7 +873,12 @@ let events   = load(LS.events, []);
    owns Order Processing as well as Stock: a person covers as many apps as they
    actually work in, and the map is keyed by app so that costs nothing. */
 const DEFAULT_ASSIGN = { market:'M. Ajay', stock:'S. Aswin', orders:'S. Aswin',
-                         finance:'Dr T Sasimurugan' };
+                         finance:'Dr T Sasimurugan',
+                         /* v3.5 — division of work stated by the CEO 23 Aug 2026: Ajay + Akash
+                            = catalogue, Aswin = order processing, packaging and despatch. These
+                            only seed GAPS (seedNewApps), so ticks the CEO already made stay. */
+                         listings:'M. Ajay',
+                         manifest:'S. Aswin', renamer:'S. Aswin', invoice:'S. Aswin' };
 let assign   = load(LS.assign, null) || Object.assign({}, DEFAULT_ASSIGN);
 /* An app added after this browser first saved its map would otherwise stay
    unassigned on that machine for ever. Seed each new key ONCE, and only into a
@@ -1220,6 +1306,7 @@ async function pollAll(manual){
     STAFF.filter(s => s.attend).forEach(s =>
       jobs.push(() => fetchOneAttendance(s).then(scheduleRender)));
     APPS.slice()
+      .filter(app => !app.noFeed)
       .filter(app => !app.everyNth || pollCount % app.everyNth === 0 || !health[app.key])
       .sort((a, b) => (b.timeout || 0) - (a.timeout || 0)).forEach(app =>
       jobs.push(() => fetchApp(app)
@@ -1257,7 +1344,7 @@ function togglePoll(){
 function renderAll(){ renderStaff(); renderChips(); renderFeed(); renderToday(); renderCoach(); renderHealth(); renderBanner(); }
 
 function renderBanner(){
-  const down = APPS.filter(a => health[a.key] && !health[a.key].ok);
+  const down = APPS.filter(a => !a.noFeed && health[a.key] && !health[a.key].ok);
   let h = '';
   if(down.length){
     h += '<div class="banner warn">⚠ <div><b>' + down.length + ' app' + (down.length>1?'s':'')
@@ -1502,7 +1589,7 @@ function renderToday(){
   document.getElementById('kpis').innerHTML =
       kpi(tod.length, 'changes today') + kpi(adds, 'new records') + kpi(eds, 'edits')
     + kpi(onDuty + '/' + clocked.length, 'staff on duty')
-    + kpi(APPS.filter(a => health[a.key] && health[a.key].ok).length + '/' + APPS.length, 'apps online');
+    + kpi(APPS.filter(a => health[a.key] && health[a.key].ok).length + '/' + APPS.filter(a => !a.noFeed).length, 'apps online');
 
   const byApp = APPS.map(a => ({ a:a, n:tod.filter(e => e.app === a.key).length }))
                     .sort((x,y) => y.n - x.n);
@@ -1649,6 +1736,18 @@ function renderHealth(){
       + '</div></div>';
 
   document.getElementById('healthGrid').innerHTML = srvCard + APPS.map(a => {
+    if(a.noFeed){
+      return '<div class="hcard">'
+        + '<div class="hcard-top">'
+          + '<span style="width:9px;height:9px;border-radius:50%;background:' + a.colour + ';flex-shrink:0"></span>'
+          + '<span class="hname">' + esc(a.name) + '</span>'
+          + '<span class="hstat hs-wait">NO FEED</span>'
+        + '</div>'
+        + '<div class="hnote">Runs entirely in the browser — it has no backend, so there is nothing '
+        + 'to watch. Listed so it can be assigned on the staff cards.'
+        + ' <a class="hlink" href="' + a.site + '" target="_blank" rel="noopener">open app ↗</a></div>'
+        + '</div>';
+    }
     const h = health[a.key] || {};
     const last = events.filter(e => e.app === a.key)[0];
     const lastD = last ? new Date(last.t) : null;
