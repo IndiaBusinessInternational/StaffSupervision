@@ -318,7 +318,7 @@ footer b{color:var(--cyan)}
     <div class="brand">
       <svg viewBox="0 0 184 184"><rect width="184" height="184" rx="30" fill="#000"/><g fill="#00c5ff"><circle cx="24" cy="24" r="4.5"/><circle cx="58" cy="24" r="7.5"/><circle cx="92" cy="24" r="10.5"/><circle cx="126" cy="24" r="13.5"/><circle cx="160" cy="24" r="16.5"/><circle cx="24" cy="58" r="4.5"/><circle cx="58" cy="58" r="7.5"/><circle cx="92" cy="58" r="10.5"/><circle cx="126" cy="58" r="13.5"/><circle cx="160" cy="58" r="16.5"/><circle cx="24" cy="92" r="4.5"/><circle cx="58" cy="92" r="7.5"/><circle cx="92" cy="92" r="10.5"/><circle cx="126" cy="92" r="13.5"/><circle cx="160" cy="92" r="16.5"/><circle cx="24" cy="126" r="4.5"/><circle cx="58" cy="126" r="7.5"/><circle cx="92" cy="126" r="10.5"/><circle cx="126" cy="126" r="13.5"/><circle cx="160" cy="126" r="16.5"/><circle cx="24" cy="160" r="4.5"/><circle cx="58" cy="160" r="7.5"/><circle cx="92" cy="160" r="10.5"/><circle cx="126" cy="160" r="13.5"/><circle cx="160" cy="160" r="16.5"/></g></svg>
       <span class="brand-txt">IBI Supervision</span>
-      <span class="ver-badge" id="verBadge" title="">v3.7</span>
+      <span class="ver-badge" id="verBadge" title="">v3.8</span>
     </div>
     <div class="tb-spacer"></div>
     <div class="livepill" id="livePill"><span class="dot" id="liveDot"></span><span id="liveTxt">idle</span></div>
@@ -410,9 +410,13 @@ footer b{color:var(--cyan)}
 /* ══════════════════════════════════════════════════════════════════════
    IBI STAFF SUPERVISION — live cross-app staff activity monitor
    ══════════════════════════════════════════════════════════════════════ */
-window.IBI_VERSION = 'v3.7';
+window.IBI_VERSION = 'v3.8';
 window.IBI_VERSION_DATE = '4 Oct 2026';
-window.IBI_VERSION_NOTE = 'The Package Tracker now protects buyer details too. The dashboard no longer '
+window.IBI_VERSION_NOTE = 'The Finance Tracker ledger is now private: its Apps Script answers nobody without a '
+  + 'sign-in. This dashboard reads it through its own backend with the CEO PIN you unlocked with, and the '
+  + 'backend reads it with a read-only service key. The activity log hides Finance entries\u2019 descriptions and '
+  + 'amounts from anyone without the PIN. Backend v3.8.'
+  + '\n\nv3.7 — The Package Tracker now protects buyer details too. The dashboard no longer '
   + 'watches or shows a parcel buyer name or pincode (who changed which parcel, and when, is all '
   + 'supervision needs). When the Package Tracker starts asking for a sign-in, this dashboard reads it '
   + 'through its own backend with the CEO PIN you unlocked with, and the backend reads the Tracker '
@@ -803,7 +807,11 @@ const APPS = [
     key:'finance', name:'Finance Tracker', short:'Finance', colour:'#22d3ee',
     site:'https://finance.indiabusinessinternational.online/',
     url:GAS('AKfycbxosA5MhEcSAIx68X2iOjF7psh1Iie3QlgTJHzy1V7Fwi2MJJlhqt0vROs-csoqpgAs'),
-    method:'GET', params:{action:'getAll'},
+    /* v3.8: Finance Tracker GAS v5.18 answers an anonymous read with NO rows
+       ({code:'auth'}); `authFallback` then asks this dashboard's own backend,
+       which reads the ledger with a read-only service key once the CEO PIN
+       this browser unlocked with checks out. */
+    method:'GET', params:{action:'getAll'}, authFallback:'financeFeed',
     pick:d => d.transactions || [],
     id:r => r.id, label:r => (r.description || r.party || 'Transaction'),
     stamp:r => r.createdAt,
