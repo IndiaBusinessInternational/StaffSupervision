@@ -318,7 +318,7 @@ footer b{color:var(--cyan)}
     <div class="brand">
       <svg viewBox="0 0 184 184"><rect width="184" height="184" rx="30" fill="#000"/><g fill="#00c5ff"><circle cx="24" cy="24" r="4.5"/><circle cx="58" cy="24" r="7.5"/><circle cx="92" cy="24" r="10.5"/><circle cx="126" cy="24" r="13.5"/><circle cx="160" cy="24" r="16.5"/><circle cx="24" cy="58" r="4.5"/><circle cx="58" cy="58" r="7.5"/><circle cx="92" cy="58" r="10.5"/><circle cx="126" cy="58" r="13.5"/><circle cx="160" cy="58" r="16.5"/><circle cx="24" cy="92" r="4.5"/><circle cx="58" cy="92" r="7.5"/><circle cx="92" cy="92" r="10.5"/><circle cx="126" cy="92" r="13.5"/><circle cx="160" cy="92" r="16.5"/><circle cx="24" cy="126" r="4.5"/><circle cx="58" cy="126" r="7.5"/><circle cx="92" cy="126" r="10.5"/><circle cx="126" cy="126" r="13.5"/><circle cx="160" cy="126" r="16.5"/><circle cx="24" cy="160" r="4.5"/><circle cx="58" cy="160" r="7.5"/><circle cx="92" cy="160" r="10.5"/><circle cx="126" cy="160" r="13.5"/><circle cx="160" cy="160" r="16.5"/></g></svg>
       <span class="brand-txt">IBI Supervision</span>
-      <span class="ver-badge" id="verBadge" title="">v3.6</span>
+      <span class="ver-badge" id="verBadge" title="">v3.7</span>
     </div>
     <div class="tb-spacer"></div>
     <div class="livepill" id="livePill"><span class="dot" id="liveDot"></span><span id="liveTxt">idle</span></div>
@@ -410,9 +410,14 @@ footer b{color:var(--cyan)}
 /* ══════════════════════════════════════════════════════════════════════
    IBI STAFF SUPERVISION — live cross-app staff activity monitor
    ══════════════════════════════════════════════════════════════════════ */
-window.IBI_VERSION = 'v3.6';
+window.IBI_VERSION = 'v3.7';
 window.IBI_VERSION_DATE = '4 Oct 2026';
-window.IBI_VERSION_NOTE = 'Order Processing now protects buyer details. The dashboard no longer '
+window.IBI_VERSION_NOTE = 'The Package Tracker now protects buyer details too. The dashboard no longer '
+  + 'watches or shows a parcel buyer name or pincode (who changed which parcel, and when, is all '
+  + 'supervision needs). When the Package Tracker starts asking for a sign-in, this dashboard reads it '
+  + 'through its own backend with the CEO PIN you unlocked with, and the backend reads the Tracker '
+  + 'with its own service key. Backend v3.7.'
+  + '\n\nv3.6 — Order Processing now protects buyer details. The dashboard no longer '
   + 'watches or shows the buyer name, city, state or invoice number of an order (who changed which '
   + 'order, and when, is all supervision needs). When Order Processing starts asking for a sign-in, '
   + 'this dashboard reads it through its own backend with the CEO PIN you unlocked with. The activity '
@@ -696,13 +701,18 @@ const APPS = [
     key:'tracker', name:'Package Tracker', short:'Packages', colour:'#34d399',
     site:'https://database.indiabusinessinternational.online/',
     url:GAS('AKfycbxLPmBJmkgFbO-5Ew5uObdVGwMNBXQ8oJCmssIue_Av_G2iaRAaArGzbRNaF7gMzFYsEg'),
-    method:'POST', params:{action:'loadPackages'},
+    /* v3.7: Package Tracker GAS v14.0 answers an anonymous read WITHOUT buyer
+       name / phone / address / pincode (none watched here any more), and once
+       it enforces sign-in it answers {code:'auth'} — then `authFallback` asks
+       this dashboard's own backend, which holds TRACKER_SERVICE_KEY and checks
+       the CEO PIN this browser unlocked with. */
+    method:'POST', params:{action:'loadPackages'}, authFallback:'trackerFeed',
     pick:d => Array.isArray(d.data) ? d.data : (d.packages || []),
     id:r => 'row' + r.rowIndex, label:r => (r.orderId || r.awb || 'Package') + ' · ' + (r.platform || ''),
     stamp:r => r.savedOn,
-    watch:['status','statusDetail','awb','courier','products','qty','amount','shipDate','expectedDelivery','buyerName','pincode'],
+    watch:['status','statusDetail','awb','courier','products','qty','amount','shipDate','expectedDelivery'],
     nice:{status:'Status',statusDetail:'Detail',awb:'AWB',courier:'Courier',products:'Products',qty:'Qty',
-          amount:'Amount ₹',shipDate:'Ship date',expectedDelivery:'Expected',buyerName:'Buyer',pincode:'Pincode'}
+          amount:'Amount ₹',shipDate:'Ship date',expectedDelivery:'Expected'}
   },
   {
     key:'orders', name:'Order Processing', short:'Orders', colour:'#60a5fa',
