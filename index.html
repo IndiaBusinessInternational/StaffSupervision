@@ -318,7 +318,7 @@ footer b{color:var(--cyan)}
     <div class="brand">
       <svg viewBox="0 0 184 184"><rect width="184" height="184" rx="30" fill="#000"/><g fill="#00c5ff"><circle cx="24" cy="24" r="4.5"/><circle cx="58" cy="24" r="7.5"/><circle cx="92" cy="24" r="10.5"/><circle cx="126" cy="24" r="13.5"/><circle cx="160" cy="24" r="16.5"/><circle cx="24" cy="58" r="4.5"/><circle cx="58" cy="58" r="7.5"/><circle cx="92" cy="58" r="10.5"/><circle cx="126" cy="58" r="13.5"/><circle cx="160" cy="58" r="16.5"/><circle cx="24" cy="92" r="4.5"/><circle cx="58" cy="92" r="7.5"/><circle cx="92" cy="92" r="10.5"/><circle cx="126" cy="92" r="13.5"/><circle cx="160" cy="92" r="16.5"/><circle cx="24" cy="126" r="4.5"/><circle cx="58" cy="126" r="7.5"/><circle cx="92" cy="126" r="10.5"/><circle cx="126" cy="126" r="13.5"/><circle cx="160" cy="126" r="16.5"/><circle cx="24" cy="160" r="4.5"/><circle cx="58" cy="160" r="7.5"/><circle cx="92" cy="160" r="10.5"/><circle cx="126" cy="160" r="13.5"/><circle cx="160" cy="160" r="16.5"/></g></svg>
       <span class="brand-txt">IBI Supervision</span>
-      <span class="ver-badge" id="verBadge" title="">v3.5</span>
+      <span class="ver-badge" id="verBadge" title="">v3.6</span>
     </div>
     <div class="tb-spacer"></div>
     <div class="livepill" id="livePill"><span class="dot" id="liveDot"></span><span id="liveTxt">idle</span></div>
@@ -410,9 +410,15 @@ footer b{color:var(--cyan)}
 /* ══════════════════════════════════════════════════════════════════════
    IBI STAFF SUPERVISION — live cross-app staff activity monitor
    ══════════════════════════════════════════════════════════════════════ */
-window.IBI_VERSION = 'v3.5';
-window.IBI_VERSION_DATE = '23 Aug 2026';
-window.IBI_VERSION_NOTE = 'Every staff-allotted web app is now on the dashboard. All three staff '
+window.IBI_VERSION = 'v3.6';
+window.IBI_VERSION_DATE = '4 Oct 2026';
+window.IBI_VERSION_NOTE = 'Order Processing now protects buyer details. The dashboard no longer '
+  + 'watches or shows the buyer name, city, state or invoice number of an order (who changed which '
+  + 'order, and when, is all supervision needs). When Order Processing starts asking for a sign-in, '
+  + 'this dashboard reads it through its own backend with the CEO PIN you unlocked with. The activity '
+  + 'log hides old buyer, city, address and pincode values unless the CEO PIN is present. '
+  + 'Backend v3.6 (same number as this page from now on).'
+  + '\n\nv3.5 — Every staff-allotted web app is now on the dashboard. All three staff '
   + 'share the same 14 apps; five were missing here — Listing Generator, Group Messenger, Signed '
   + 'Manifest, File Re-Namer and the Invoice & Label Separator. The first four now have a small '
   + 'read-only list in their own backend (a generation log, the message feed, the manifests in '
@@ -702,8 +708,13 @@ const APPS = [
     key:'orders', name:'Order Processing', short:'Orders', colour:'#60a5fa',
     site:'https://orders.indiabusinessinternational.online/',
     url:GAS('AKfycbydsL-wCm-oJzXNEBf58q7FkM8JehYijkkiBd8NuzJScjIQ4beR06FSFNdLnZT_yEDq'),
-    /* doGet takes no action — it always returns the whole Orders sheet. */
-    method:'GET', params:{},
+    /* doGet takes no action — it always returns the whole Orders sheet.
+       v3.6: from Order Processing GAS v15.0 an anonymous read comes WITHOUT the
+       buyer's name / city / state / invoice (none of which are watched here any
+       more), and once that backend enforces sign-in it answers {code:'auth'}.
+       Then `authFallback` asks this dashboard's own backend instead, which holds
+       the service key and checks the CEO PIN this browser already unlocked with. */
+    method:'GET', params:{}, authFallback:'ordersFeed',
     pick:d => d.orders || [],
     /* Order ID is the real key, but rows entered before that column existed
        have none — fall back to the sheet's own serial so they still diff. */
@@ -713,13 +724,11 @@ const APPS = [
        date and the time, which Date() tolerates but is not worth relying on. */
     stamp:r => String(r['Entry Date & Time'] || '').replace(/\s+/g, ' ').trim(),
     watch:['Platform','Courier Service','Product Name','Retail Price (Rs)','Qty Sold','Payment Type',
-           'Shipment Type','Pickup Date','Name of Buyer','Location / City','State / UT',
-           'Pkg Wt (gm)','B.Wt (gms)','Order ID','Invoice Number'],
+           'Shipment Type','Pickup Date','Pkg Wt (gm)','B.Wt (gms)','Order ID'],
     nice:{'Platform':'Platform','Courier Service':'Courier','Product Name':'Product',
           'Retail Price (Rs)':'Order total ₹','Qty Sold':'Qty sold','Payment Type':'Payment',
-          'Shipment Type':'Shipment','Pickup Date':'Pickup date','Name of Buyer':'Buyer',
-          'Location / City':'City','State / UT':'State','Pkg Wt (gm)':'Package wt',
-          'B.Wt (gms)':'Billed wt','Order ID':'Order ID','Invoice Number':'Invoice no'},
+          'Shipment Type':'Shipment','Pickup Date':'Pickup date','Pkg Wt (gm)':'Package wt',
+          'B.Wt (gms)':'Billed wt','Order ID':'Order ID'},
     /* ⚠ This feed is expensive: doGet has no cache and getDataRange()s the whole
        1,400+ row Orders sheet on every call. Every IBI app shares ONE Apps Script
        quota, so it is polled every 3rd cycle (~2¼ min) rather than every 45 s.
@@ -1026,12 +1035,24 @@ async function rawFetch(app){
       ? await fetch(app.url, { method:'POST', body:new URLSearchParams(app.params), signal:ctl.signal })
       : await fetch(app.url + '?' + new URLSearchParams(app.params), { signal:ctl.signal });
     const txt = await res.text();
-    try{ return JSON.parse(txt); }
+    let data;
+    try{ data = JSON.parse(txt); }
     catch(e){
       throw new Error(txt.slice(0,60).indexOf('<') !== -1
         ? 'Backend returned an error page, not data (script busy or timed out)'
         : 'Unreadable response from backend');
     }
+    /* v3.6: the app now wants a sign-in — ask our own backend, which holds the
+       service key, with the CEO PIN this browser unlocked with. */
+    if(data && data.code === 'auth' && app.authFallback){
+      if(!SUP_BACKEND || !devPin()) throw new Error('Needs sign-in — unlock the dashboard with the CEO PIN again');
+      const r2 = await fetch(SUP_BACKEND, { method:'POST', signal:ctl.signal,
+        body:new URLSearchParams({ action:app.authFallback, pin:devPin() }) });
+      const d2 = await r2.json();
+      if(!d2 || d2.status !== 'ok') throw new Error((d2 && d2.message) || 'Supervision backend could not relay this feed');
+      return d2;
+    }
+    return data;
   } finally { clearTimeout(kill); }
 }
 async function fetchApp(app){
@@ -1096,7 +1117,12 @@ async function fetchServerLog(){
     const kill = setTimeout(() => ctl.abort(), 30000);
     let d;
     try{
-      const r = await fetch(SUP_BACKEND + '?action=getLog&limit=500', { signal:ctl.signal });
+      /* v3.6: personal values (buyer, city, address, pincode…) in the log come back
+         only with the CEO PIN — sent in a POST body, never in the URL. */
+      const r = devPin()
+        ? await fetch(SUP_BACKEND, { method:'POST', signal:ctl.signal,
+            body:new URLSearchParams({ action:'getLog', limit:'500', pin:devPin() }) })
+        : await fetch(SUP_BACKEND + '?action=getLog&limit=500', { signal:ctl.signal });
       d = await r.json();
     } finally { clearTimeout(kill); }
     if(!d || d.status !== 'ok') throw new Error((d && d.message) || 'bad response');
