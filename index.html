@@ -291,7 +291,8 @@ footer b{color:var(--cyan)}
   .tabs{margin:16px 0 10px}
   .staff-grid,.hgrid{grid-template-columns:minmax(0,1fr);gap:8px}
   .feed{gap:8px}
-  .staff-card,.hcard,.coach,.bars,.ev,.banner{border-radius:0;border-left:0;border-right:0;box-shadow:none;overflow-wrap:anywhere}
+  .staff-card,.hcard,.coach,.bars,.ev,.banner{border-radius:0;border-left:0;border-right:0;box-shadow:none;overflow-wrap:break-word}
+  button,.btn,select,input,[role="button"]{overflow-wrap:normal}
   .staff-card,.hcard,.bars,.ev,.banner{padding-left:10px;padding-right:10px}
   .coach{border-left:3px solid var(--warn);padding-left:10px;padding-right:10px;margin-bottom:8px}
   .coach.sev-hi{border-left-color:var(--bad)} .coach.sev-lo{border-left-color:var(--info)}
@@ -340,7 +341,7 @@ footer b{color:var(--cyan)}
     <div class="brand">
       <svg viewBox="0 0 184 184"><rect width="184" height="184" rx="30" fill="#000"/><g fill="#00c5ff"><circle cx="24" cy="24" r="4.5"/><circle cx="58" cy="24" r="7.5"/><circle cx="92" cy="24" r="10.5"/><circle cx="126" cy="24" r="13.5"/><circle cx="160" cy="24" r="16.5"/><circle cx="24" cy="58" r="4.5"/><circle cx="58" cy="58" r="7.5"/><circle cx="92" cy="58" r="10.5"/><circle cx="126" cy="58" r="13.5"/><circle cx="160" cy="58" r="16.5"/><circle cx="24" cy="92" r="4.5"/><circle cx="58" cy="92" r="7.5"/><circle cx="92" cy="92" r="10.5"/><circle cx="126" cy="92" r="13.5"/><circle cx="160" cy="92" r="16.5"/><circle cx="24" cy="126" r="4.5"/><circle cx="58" cy="126" r="7.5"/><circle cx="92" cy="126" r="10.5"/><circle cx="126" cy="126" r="13.5"/><circle cx="160" cy="126" r="16.5"/><circle cx="24" cy="160" r="4.5"/><circle cx="58" cy="160" r="7.5"/><circle cx="92" cy="160" r="10.5"/><circle cx="126" cy="160" r="13.5"/><circle cx="160" cy="160" r="16.5"/></g></svg>
       <span class="brand-txt">IBI Supervision</span>
-      <span class="ver-badge" id="verBadge" title="">v3.9</span>
+      <span class="ver-badge" id="verBadge" title="">v3.10</span>
     </div>
     <div class="tb-spacer"></div>
     <div class="livepill" id="livePill"><span class="dot" id="liveDot"></span><span id="liveTxt">idle</span></div>
@@ -432,9 +433,10 @@ footer b{color:var(--cyan)}
 /* ══════════════════════════════════════════════════════════════════════
    IBI STAFF SUPERVISION — live cross-app staff activity monitor
    ══════════════════════════════════════════════════════════════════════ */
-window.IBI_VERSION = 'v3.9';
+window.IBI_VERSION = 'v3.10';
 window.IBI_VERSION_DATE = '11 Oct 2026';
-window.IBI_VERSION_NOTE = 'Phones are edge to edge: no outer margin, full-width cards, 10px side padding, and the '
+window.IBI_VERSION_NOTE = 'Long words in cards now wrap only where they must, and button and label text is never split mid-word.'
+  + '\n\nv3.9 — Phones are edge to edge: no outer margin, full-width cards, 10px side padding, and the '
   + 'page never grows wider than the screen. Tablets and desktop are unchanged.'
   + '\n\nv3.8 — The Finance Tracker ledger is now private: its Apps Script answers nobody without a '
   + 'sign-in. This dashboard reads it through its own backend with the CEO PIN you unlocked with, and the '
